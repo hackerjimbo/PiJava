@@ -20,7 +20,6 @@ package Jimbo.Devices;
 import java.io.IOException;
 
 import com.pi4j.io.i2c.I2CBus;
-import com.pi4j.io.i2c.I2CFactory;
 import com.pi4j.io.i2c.I2CDevice;
 
 /**
@@ -110,19 +109,19 @@ public class SN3218 {
         device.write(1, data, 0, data.length);
     }
    
-    /** The I2C device */
+    /** The I2C device. */
     private final I2CDevice device;
-    /** The number of LEDs */
+    /** The number of LEDs. */
     private final static int LEDS = 18;
-    /** The number of enable bytes */
+    /** The number of enable bytes. */
     private final static int ENABLES = 3;
-    /** The number of go bytes */
+    /** The number of go bytes. */
     private final static int GOS = 1;
     /** The size of the data we hold: 18 values, 3 enables 1 go. */
     private final static int DATA_SIZE = LEDS + ENABLES + GOS;
     /** The data we hold for the device. Starts at offset ONE in the device! */
     private final byte[] data = new byte[DATA_SIZE];
-    /** Wakeup data */
+    /** Wakeup data. */
     private final byte[] wakeup = {
         0x01,                               // Wake up the device
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // Data part one

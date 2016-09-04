@@ -33,6 +33,7 @@ import com.pi4j.io.i2c.I2CDevice;
 public class IS31FL3730 {
     /**
      * Constructor. This uses the default device address on the given bus.
+     * 
      * @param bus The bus the controller is on.
      * @throws IOException When it can't create the bus device.
      */
@@ -45,6 +46,7 @@ public class IS31FL3730 {
     
     /**
      * Constructor. The uses a specified address on the given bus,
+     * 
      * @param bus The bus the controller is on.
      * @param addr The address on the bus
      * @throws IOException When it can't create the bus device.
@@ -66,7 +68,8 @@ public class IS31FL3730 {
     }
     
     /**
-     * Set the mode of the device.
+     * Set the mode of the device. You really want to read the manual for this.
+     * 
      * @param mode You can have (or not) MODE_SSD, MODE_AE and one of:
      * MODE_8X8, MODE_7X9, MODE_6X10 or MODE_9X11 and one of:
      * MODE_M1, MODE_M2 or MODE_M12.
@@ -83,6 +86,7 @@ public class IS31FL3730 {
     
     /**
      * Set a single byte in M1.
+     * 
      * @param offset The offset (0 to 10).
      * @param value The value
      * @throws java.io.IOException On invalid parameters or error.
@@ -96,6 +100,7 @@ public class IS31FL3730 {
     }
  /**
      * Set a single byte in M2.
+     * 
      * @param offset The offset (0 to 10).
      * @param value The value
      * @throws java.io.IOException On invalid parameters or error.
@@ -112,6 +117,7 @@ public class IS31FL3730 {
      * Write the M1 matrix data and then (maybe) hit the update register.
      * This needs between 1 to 12 bytes of data but the 12th (if there)
      * isn't used for anything useful except triggering the device to update.
+     * 
      * @param data A 1- to 12-item byte array.
      * @throws IOException In case of problems.
      */
@@ -125,6 +131,7 @@ public class IS31FL3730 {
     
     /**
      * Write the entire M2 matrix data.
+     * 
      * @param data A 1- to 11-item byte array.
      * @throws IOException In case of problems.
      */
@@ -138,6 +145,11 @@ public class IS31FL3730 {
 
     /**
      * Set the lighting effect register. See the datasheet for the full details.
+     * In summary, if you're using the audio input you set the gain here using
+     * one of the LER_*DB values for the appropriate decibel gain. You should
+     * always use one of the LER_*MA values to set the driver current for the 
+     * LEDs in the matrix.
+     * 
      * @param effect The value to use. Must be between 0 and 127 inclusive.
      * @throws IOException In case of error.
      */
@@ -150,7 +162,8 @@ public class IS31FL3730 {
     }
     
     /**
-     * Set the PWM parameters.
+     * Set the PWM parameter.
+     * 
      * @param pwm The PWM value. Must be between 0 and 128 inclusive.
      * @throws IOException In case of error.
      */
@@ -164,6 +177,7 @@ public class IS31FL3730 {
     
     /**
      * Tell the device to update its display.
+     * 
      * @throws IOException In case things go wrong.
      */
     public void update () throws IOException
@@ -173,6 +187,7 @@ public class IS31FL3730 {
     
     /**
      * Try a bus write until it works.
+     * 
      * @param reg The register to write.
      * @param value The value to write
      * @throws IOException If it really can't be made to work!
@@ -208,6 +223,7 @@ public class IS31FL3730 {
     
     /**
      * Try a bus write until it works.
+     * 
      * @param reg The register to write.
      * @param value The values to write
      * @throws IOException If it really can't be made to work!
@@ -308,7 +324,55 @@ public class IS31FL3730 {
     public static final byte MODE_6X10 = 0x02;
     /** Set 5*11 */
     public static final byte MODE_5X11 = 0x03;
-   
+    
+    /** Set drive to 5mA. */
+    public static final byte LER_05MA = 0x08;
+    /** Set drive to 10mA. */
+    public static final byte LER_10MA = 0x09;
+    /** Set drive to 15mA. */
+    public static final byte LER_15MA = 0x0a;
+    /** Set drive to 20mA. */
+    public static final byte LER_20MA = 0x0b;
+    /** Set drive to 25mA. */
+    public static final byte LER_25MA = 0x0c;
+    /** Set drive to 30mA. */
+    public static final byte LER_30MA = 0x0d;
+    /** Set drive to 35mA. */
+    public static final byte LER_35MA = 0x0e;
+    /** Set drive to 40mA. */
+    public static final byte LER_40MA = 0x00;
+    /** Set drive to 45mA. */
+    public static final byte LER_45MA = 0x01;
+    /** Set drive to 50mA. */
+    public static final byte LER_50MA = 0x02;
+    /** Set drive to 55mA. */
+    public static final byte LER_55MA = 0x03;
+    /** Set drive to 60mA. */
+    public static final byte LER_60MA = 0x04;
+    /** Set drive to 65mA. */
+    public static final byte LER_65MA = 0x05;
+    /** Set drive to 70mA. */
+    public static final byte LER_70MA = 0x06;
+    /** Set drive to 75mA. */
+    public static final byte LER_75MA = 0x07;
+    
+    /** Set audio gain to 0db. */
+    public static final byte LER_0DB = 0x00;
+    /** Set audio gain to +3db. */
+    public static final byte LER_3DB = 0x10;
+    /** Set audio gain to +6db. */
+    public static final byte LER_6DB = 0x20;
+    /** Set audio gain to +9db. */
+    public static final byte LER_9DB = 0x30;
+    /** Set audio gain to +12db. */
+    public static final byte LER_12DB = 0x40;
+    /** Set audio gain to +15db. */
+    public static final byte LER_15DB = 0x50;
+    /** Set audio gain to +18db. */
+    public static final byte LER_18DB = 0x60;
+    /** Set audio gain to -6db. */
+    public static final byte LER_M6DB = 0x70;
+
     /** Point to the device we're using. */
     private final I2CDevice device;
 }

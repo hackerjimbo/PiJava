@@ -48,7 +48,7 @@ public class MicroDotPHAT
         {
             driver[i] = new IS31FL3730 (bus, ADDRS[i]);
             driver[i].setMode (IS31FL3730.MODE_M12 | IS31FL3730.MODE_8X8);
-            driver[i].setLightingEffect (0x0e);
+            driver[i].setLightingEffect (IS31FL3730.LER_35MA);
             driver[i].setPWM (128);
             
             for (int j = 0; j < 8; ++j)

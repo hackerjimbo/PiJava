@@ -169,7 +169,7 @@ public class IS31FL3730 {
      */
     public void setPWM (int pwm) throws IOException
     {
-        if (pwm < 0 || pwm > 128)
+        if (pwm < 0 || pwm > MAX_PWM)
             throw new IOException ("Bad PWM " + pwm);
         
         retryWrite (REG_PWM, (byte) pwm);
@@ -372,7 +372,10 @@ public class IS31FL3730 {
     public static final byte LER_18DB = 0x60;
     /** Set audio gain to -6db. */
     public static final byte LER_M6DB = 0x70;
-
+    
+    /** The maximum value the PWM can be. */
+    public static final int MAX_PWM = 128;
+    
     /** Point to the device we're using. */
     private final I2CDevice device;
 }

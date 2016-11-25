@@ -23,6 +23,9 @@ import java.io.IOException;
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 /**
  * This class drive the IS31FL3730 display controller. It's primary goal is to
  * be generic so that its users can provide the appropriate parameters to make
@@ -30,7 +33,10 @@ import com.pi4j.io.i2c.I2CDevice;
  * 
  * @author Jim Darby
  */
-public class IS31FL3730 {
+public class IS31FL3730
+{
+    private static final Logger LOG = Logger.getLogger ("Jimbo.Devices.IS31FL3730");
+    
     /**
      * Constructor. This uses the default device address on the given bus.
      * 
@@ -98,7 +104,8 @@ public class IS31FL3730 {
         
         retryWrite (REG_M1_BASE + offset, value);
     }
- /**
+
+    /**
      * Set a single byte in M2.
      * 
      * @param offset The offset (0 to 10).
@@ -194,31 +201,9 @@ public class IS31FL3730 {
      */
     private void retryWrite (int reg, byte value) throws IOException
     {
-        IOException error = null;
+        buffer1[0] = value;
         
-        total += 1;
-        
-        for (int i = 0; i < MAX_TRIES; ++i)
-        {
-            try {
-                device.write (reg, value);
-                                
-                if (i > 0) {
-                    ++tries[i-1];
-                    printTries ();
-                }
-                
-                error = null;
-                break;
-            }
-            
-            catch (IOException e) {
-                error = e;
-            }
-        }
-        
-        if (error != null)
-            throw error;
+        retryWrite (reg, buffer1, 0, 1);
     }
     
     /**
@@ -231,37 +216,55 @@ public class IS31FL3730 {
     private void retryWrite (int reg, byte[] value, int base, int length) throws IOException
     {
         IOException error = null;
-                
-        total += 1;
-                
+               
         for (int i = 0; i < MAX_TRIES; ++i)
         {
-            try {
+            try
+            {
                 device.write (reg, value, base, length);
+                ++tries[i];
                 
-                if (i > 0) {
-                    ++tries[i-1];
+                if (i > 0)
                     printTries ();
-                }
                 
                 error = null;
                 break;
             }
             
-            catch (IOException e) {
+            catch (IOException e)
+            {
                 error = e;
             }
             
-            try {
+            try
+            {
                 Thread.sleep (1);
             }
             
-            catch (Exception e) {
+            catch (Exception e)
+            {
+                LOG.log (Level.WARNING, "Sleep interrupted: {0}", e.getLocalizedMessage ());
             }
         }
         
         if (error != null)
             throw error;
+    }
+
+    /**
+     * Set the number of tries before logging a warning. Note this will
+     * never log if there isn't a retry.
+     * 
+     * @param n The number of tries, >= 0.
+     * 
+     * @throws IOException On a bad paramters.
+     */
+    public void setTriesWarning (int n) throws IOException
+    {
+        if (n < 0)
+            throw new IOException ("Bad number of tries " + n);
+        
+        warn_tries = n;
     }
     
     /**
@@ -269,24 +272,40 @@ public class IS31FL3730 {
      */
     private void printTries ()
     {
-        int extra = 0;
+        int total = 0;
+        int failed = 0;
+        boolean summarise = false;
         
         for (int i = 0; i < MAX_TRIES; ++i)
-            if (tries[i] != 0)
-            {
-                extra += tries[i] * (i + 1);
-                System.out.println ("Tries " + (i + 1) + " = " + tries[i]);
-            }
+        {
+            total += tries[i];
         
-        System.out.println ("As as percentage: " + (((double) extra / total)) * 100);
+            if (i > 0 && tries[i] != 0)
+            {
+                failed += tries[i] * i;
+                
+                if (i > warn_tries)
+                {
+                    LOG.log (Level.INFO, "Retries {0} = {1}", new Object[]{i, tries[i]});
+                    summarise = true;
+                }
+            }
+        }
+        
+        if (summarise)
+            LOG.log (Level.INFO, "As as percentage: {0}", (((double)  failed / total)) * 100);
     }
     
+    // Dealing with communication and communication problems
+    
+    /** Buffer for single byte writes. */
+    private final byte[] buffer1 = new byte[1];
+    /** Warn if this or more tried needed to communicate with device. */
+    private int warn_tries = 4;
     /** The maximum number of tries to send something over the bus. */
     private static final int MAX_TRIES = 20;
     /** Create a histogram of the number of tries;. */
     private final int tries[] = new int[MAX_TRIES];
-    /** Total number of transmissions attempted. */
-    private long total = 0;
     
     /** The default I2C address of the device. */
     private static final byte I2C_ADDR = 0x60;

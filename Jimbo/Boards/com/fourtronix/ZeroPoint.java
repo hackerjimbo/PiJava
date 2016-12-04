@@ -26,12 +26,6 @@ import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.component.servo.Servo;
 import com.pi4j.component.servo.ServoDriver;
 import com.pi4j.component.ComponentBase;
-//import com.pi4j.io.gpio.Pin;
-
-//import java.io.IOException;
-//import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class controls the 4tronix ZeroPoint.
@@ -41,11 +35,21 @@ import java.util.logging.Logger;
 
 public class ZeroPoint extends ComponentBase implements Servo
 {  
+    /**
+     * Construct a ZeroPoint object. There can be only one (TM) and we have
+     * no way of checking one is actually wired up.
+     */
     public ZeroPoint ()
     {
         moveto (0);
     }
     
+    /**
+     * Move to a specific step. This uses the original version of the values
+     * with the range 0 to 600.
+     * 
+     * @param pos The position to move to.
+     */
     public void moveto (int pos)
     {
         // Already there?
@@ -73,54 +77,65 @@ public class ZeroPoint extends ComponentBase implements Servo
             }
             
             for (int j = 0; j < pins.length; ++j)
-            {
-                //System.out.print (pins[j].getName() + " to " + sequence[phase][j] + ' ');
                 pins[j].setState (sequence[phase][j]);
-            }
-            
-            //System.out.println ();
             
             try
             {
-                // Once we've got going we can go faster. Let's have some magic
-                // values!
+                // Lots of debate over the rate. 500 steps per second seems to
+                // work all the time.
                 
                 Thread.sleep (2);
             }
             
+            // That didn't got according to play.... But ignore it.
             catch (InterruptedException ex)
             {
-                Logger.getLogger(ZeroPoint.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         
         location = pos;
     }
         
+    /**
+     * Set the position using the Servo interface. It's not a servo but
+     * seems to wat to act like one.
+     * 
+     * @param pos The position: -100 to +100.
+     */
     @Override
-    public void setPosition (float f)
+    public void setPosition (float pos)
     {
-        moveto ((int) ((f + 100) / 200 * (MAX - MIN) + MIN));
+        moveto ((int) ((pos + 100) / 200 * (MAX - MIN) + MIN));
     }
 
+    /**
+     * Return the current position in the range -100 to +100.
+     * 
+     * @return The position.
+     */
     @Override
     public float getPosition ()
     {
         return (float) (((double) (location - MIN) / (MAX - MIN) - 0.5) * 200);
     }
 
+    /**
+     * Return the servo driver used. As we don't use on this returns null.
+     * This may cause problems later.
+     * 
+     * @return The servo driver (null).
+     */
     @Override
     public ServoDriver getServoDriver ()
     {
         return null;
     }
-    
-    @Override
-    public void clearProperties ()
-    {
-    }
 
-    final boolean[][] sequence =
+    /**
+     * The sequence from Gareth. This doesn't appear to be the standard one.
+     * There may be some odd wiring going on here. Or I just don't understand!
+     */
+    static private final boolean[][] sequence =
     {
         { true, false, false,  true},
         { true, false,  true, false},
@@ -128,16 +143,10 @@ public class ZeroPoint extends ComponentBase implements Servo
         {false, true,  false,  true}
     };
     
-    /*final boolean[][] sequence =
-    {
-        { true, false, false,  true},
-        { true,  true, false, false},
-        {false,  true,  true, false},
-        {false, false,  true,  true}
-    };*/
-    
+    /** The GPIO controller we're going to use. */
     private final GpioController gpio = GpioFactory.getInstance();
     
+    /** Our list of pins used. */
     private final GpioPinDigitalOutput pins[] =
     {
         gpio.provisionDigitalOutputPin (RaspiPin.GPIO_07, "A"),
@@ -151,7 +160,9 @@ public class ZeroPoint extends ComponentBase implements Servo
     /** Our current phase in the steps. */
     private int phase = 0;
 
+    /** The minimum step value used. */
     public static final int MIN = 0;
+    /** The maximum step value used. */
     public static final int MAX = 600;
     
     public static void main (String args[]) throws InterruptedException

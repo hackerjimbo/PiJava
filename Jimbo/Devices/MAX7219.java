@@ -68,7 +68,7 @@ public class MAX7219
      * 
      * @throws IOException In case of error.
      */
-    void writeDigit (byte digit, byte value) throws IOException
+    public void writeDigit (byte digit, byte value) throws IOException
     {
         validateDigit (digit);
         
@@ -87,7 +87,7 @@ public class MAX7219
      * 
      * @throws IOException In case of error.
      */
-    void writeDigit (int device, byte digit, byte value) throws IOException
+    public void writeDigit (int device, byte digit, byte value) throws IOException
     {
         validateDevice (device);
         validateDigit (digit);
@@ -108,10 +108,9 @@ public class MAX7219
      * Does anyone else think someone was trapped in the factory and put the
      * HELP in there as a “message in a bottle”?
      * 
-     * 
      * @throws IOException In case of error.
      */
-    void setDecodeMode (byte mode) throws IOException
+    public void setDecodeMode (byte mode) throws IOException
     {
         validateMode (mode);
         
@@ -135,7 +134,7 @@ public class MAX7219
      *
      * @throws IOException In case of error.
      */
-    void setDecodeMode (int device, byte mode) throws IOException
+    public void setDecodeMode (int device, byte mode) throws IOException
     {
         validateDevice (device);
         validateMode (mode);
@@ -150,11 +149,11 @@ public class MAX7219
      * 
      * @throws IOException In case of error.
      */
-    void setIntensity (byte intensity) throws IOException
+    public void setIntensity (int intensity) throws IOException
     {
         validateIntensity (intensity);
         
-        tx_update (REG_INTENSITY, intensity);
+        tx_update (REG_INTENSITY, (byte) intensity);
     }
     
     /**
@@ -166,12 +165,12 @@ public class MAX7219
      * 
      * @throws IOException In case of error.
      */
-    void setIntensity (int device, byte intensity) throws IOException
+    public void setIntensity (int device, int intensity) throws IOException
     {
         validateDevice (device);
         validateIntensity (intensity);
         
-        tx_update (REG_NO_OP, intensity, device, REG_INTENSITY);
+        tx_update (REG_NO_OP, (byte) intensity, device, REG_INTENSITY);
     }
     
     /**
@@ -182,11 +181,11 @@ public class MAX7219
      * 
      * @throws IOException In case of error.
      */
-    void setScanLimit (byte limit) throws IOException
+    public void setScanLimit (int limit) throws IOException
     {
         validateDigit (limit);
         
-        tx_update (REG_SCAN_LIMIT, limit);
+        tx_update (REG_SCAN_LIMIT, (byte) limit);
     }
         
     /**
@@ -198,12 +197,12 @@ public class MAX7219
      * 
      * @throws IOException In case of error.
      */
-    void setScanLimit (int device, byte limit) throws IOException
+    public void setScanLimit (int device, int limit) throws IOException
     {
         validateDevice (device);
         validateDigit (limit);
         
-        tx_update (REG_NO_OP, limit, device, REG_SCAN_LIMIT);
+        tx_update (REG_NO_OP, (byte) limit, device, REG_SCAN_LIMIT);
     }
     
     /**

@@ -115,7 +115,7 @@ public class Pi2C
 
             // End up here for uknown Pies and unknown boards
             default:
-                throw new IOException ("Unknwon board type");
+                throw new IOException ("Unknown board type");
             }
                 
         try

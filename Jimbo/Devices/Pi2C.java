@@ -108,14 +108,23 @@ public class Pi2C
             case RaspberryPi_2B:
             case RaspberryPi_3B:
             case RaspberryPi_Zero:
+            case RaspberryPi_ZeroW:
                 use_i2cbus  = I2CBus.BUS_1;
                 rev1 = false;
                 plus = true;
                 break;
 
-            // End up here for uknown Pies and unknown boards
-            default:
+            // End up here for uknown Pies
+            case RaspberryPi_Unknown:
+                throw new IOException ("Unknown Raspberry Pi model");
+                
+            case UNKNOWN:
+                // End up here for totally unknown boards
                 throw new IOException ("Unknown board type");
+                
+            // End up here if we're totally confused
+            default:
+                throw new IOException ("Unknown board type with unexpected return value");
             }
                 
         try

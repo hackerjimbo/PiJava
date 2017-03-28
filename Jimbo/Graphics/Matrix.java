@@ -33,4 +33,9 @@ public interface Matrix
      * @return The maximum size.
      */
     public Point getMax ();
+        
+    /**
+     * Update the display.
+     */
+    public void show ();
 }

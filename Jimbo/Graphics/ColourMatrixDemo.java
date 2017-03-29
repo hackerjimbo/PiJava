@@ -18,6 +18,8 @@
 
 package Jimbo.Graphics;
 
+import java.io.IOException;
+
 /**
  * Do a demo on an arbitrary ColourMatrix.
  * 
@@ -30,9 +32,10 @@ public class ColourMatrixDemo
      * 
      * @param m The ColourMatrix to use.
      * 
-     * @throws InterruptedException 
+     * @throws InterruptedException In case of thread badness.
+     * @throws java.io.IOException In case of trouble.
      */
-    public static void run (ColourMatrix m) throws InterruptedException
+    public static void run (ColourMatrix m) throws InterruptedException, IOException
     {
         final Point limits = m.getMax ();
         final int max_x = limits.getX ();

@@ -24,22 +24,35 @@ import Jimbo.Devices.WS2811.WS2811Raw;
 import Jimbo.Graphics.FlipY;
 import Jimbo.Graphics.Point;
 import Jimbo.Graphics.Colour;
+import Jimbo.Graphics.ColourMatrix;
 import Jimbo.Graphics.ColourMatrixDemo;
+import java.io.IOException;
 
 /**
  * This class controls the Pimoroni Unicorn pHAT.
  * 
  * @author Jim Darby
  */
-public class UnicornPhat implements Jimbo.Graphics.ColourMatrix
+public class UnicornPhat implements ColourMatrix
 {
     /**
      * Construct a new UnicornPhat object. We can have only one though this
-     * isn't checked.
+     * isn't checked. The brightness is defaulted to 25% (because Pimoroni).
      */
     public UnicornPhat ()
     {
         h = new WS2811 (WIDTH, HEIGHT, new FlipY (WIDTH, HEIGHT), WS2811Raw.WS2811_STRIP_GRB, 0.25);
+    }
+    
+    /**
+     * Construct a new UnicornPhat object. We can have only one though this
+     * isn't checked.
+     * 
+     * @param brightness The value of brightness to use: 0.0 to 1.0.
+     */
+    public UnicornPhat (double brightness)
+    {
+        h = new WS2811 (WIDTH, HEIGHT, new FlipY (WIDTH, HEIGHT), WS2811Raw.WS2811_STRIP_GRB, brightness);
     }
     
     /**
@@ -95,8 +108,9 @@ public class UnicornPhat implements Jimbo.Graphics.ColourMatrix
      * @param args The command line arguments. They're ignored.
      * 
      * @throws InterruptedException If Thread.sleep gets interrupted.
+     * @throws java.io.IOException In case of trouble.
      */
-    public static void main (String args[]) throws InterruptedException
+    public static void main (String args[]) throws InterruptedException, IOException
     {
         final UnicornPhat u = new UnicornPhat ();
         
@@ -107,9 +121,14 @@ public class UnicornPhat implements Jimbo.Graphics.ColourMatrix
     public static final int WIDTH = 8;
     /** The height of the board. */
     public static final int HEIGHT = 4;
+    /** The maximum X value. */
+    public static final int MAX_X = WIDTH - 1;
+    /** The maximum Y value. */
+    public static final int MAX_Y = HEIGHT - 1;
+    
+    /** The maximum values as a Point. */
+    private final static Point MAX = new Point (MAX_X, MAX_Y);
     
     /** Internal pointer to the hat. */
     private final WS2811 h;
-    /** Internal Point contain the maximum X and Y values. */
-    private static final Point MAX = new Point (WIDTH - 1, HEIGHT - 1);
 }

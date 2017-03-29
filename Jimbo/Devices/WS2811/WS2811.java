@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Jim Darby.
+ * Copyright (C) 2016-2017 Jim Darby.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,11 +20,10 @@ package Jimbo.Devices.WS2811;
 
 import Jimbo.Graphics.Mapping;
 import Jimbo.Graphics.Point;
-import Jimbo.Graphics.Colour;
+import Jimbo.Graphics.ColourMatrix;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,7 +36,7 @@ import java.nio.file.StandardCopyOption;
  * 
  * @author Jim Darby
  */
-public class WS2811
+public class WS2811 implements ColourMatrix
 {
     /**
      * Create an interface to the WS2811 hardware.
@@ -70,44 +69,24 @@ public class WS2811
 	i_width = width;
 	i_height = height;
 	max = new Point (i_width - 1, i_height - 1);
-
-	// System.out.println ("Input width " + i_width + " height " + i_height + " limit " + max_);
 	
 	final Point out = map.getOutMax ();
 	
         final int o_width = out.getX () + 1;
         final int o_height = out.getY () + 1;
-
-	// System.out.println ("Output width " + o_width + " height " + o_height + " limit " + out);
 		
         leds = o_width * o_height;
 	this.map = new int[leds];
         data = new int[leds];
 
 	for (int y = 0; y < i_height; ++y)
-	    for (int x = 0; x < i_width; ++x) {
+	    for (int x = 0; x < i_width; ++x)
+            {
 		final Point p = map.map (new Point (x, y));
-
-		// System.out.println ("Mapped " + x + ',' + y + " to " + p);
-		
 		final int value = p.getX () + o_width * p.getY ();
-
-		// System.out.println ("Map " + x + ',' + y + " to " + value + " at " + (x + i_width * y));
 		
 		this.map[x + i_width * y] = value;
 	    }
-
-	/* System.out.println ();
-
-	for (int i = 0; i < leds_; ++i) {
-	    if (i != 0)
-		System.out.print (' ');
-	    
-	    System.out.print (map_[i]);
-	}
-
-	System.out.println ();
-	*/
 	
         for (int i = 0; i < leds; ++i)
             data[i] = 0;
@@ -129,6 +108,7 @@ public class WS2811
      * @param g Green value: [0,255].
      * @param b Blue value: [0,255].
      */
+    @Override
     public void setPixel (Point p, int r, int g, int b)
     {       
 	if (!p.inside (max) ||
@@ -144,24 +124,26 @@ public class WS2811
     }
     
     /**
-     * Set a specific pixel to a specific Colour value.
-     * 
-     * @param p The point to set.
-     * @param c The colour to set it to.
-     */
-    public void setPixel (Point p, Colour c)
-    {
-        setPixel (p, c.getRed (), c.getGreen (), c.getBlue ());
-    }
-    
-    /**
      * Send the data to the string.
      */
+    @Override
     public void show ()
     {
         WS2811Raw.ws2811_update (data);
     }
-   
+    
+    /**
+     * Return a point with the maximum values for X and Y in this
+     * matrix.
+     * 
+     * @return The maximum size.
+     */
+    @Override
+    public Point getMax ()
+    {
+        return max;
+    }
+    
     /**
      * Shut everything down.
      */
@@ -170,6 +152,10 @@ public class WS2811
         WS2811Raw.ws2811_close ();
     }
     
+    /**
+     * Support routine to load the native library. Very strongly inspired
+     * by code from the pi4j library itself.
+     */
     private static void loadNative ()
     {
         if (nativeLoaded)
@@ -187,7 +173,7 @@ public class WS2811
             final String fileNameFull = inputPath.getFileName ().toString ();
             final int dotIndex = fileNameFull.indexOf ('.');
 
-            if (dotIndex < 0 || dotIndex >= fileNameFull.length() - 1)
+            if (dotIndex < 0 || dotIndex >= fileNameFull.length () - 1)
                 throw new IllegalArgumentException ("The path has to end with a file name and extension, but found: " + fileNameFull);
 
             final String fileName = fileNameFull.substring (0, dotIndex);
@@ -217,43 +203,7 @@ public class WS2811
             System.out.println ("Failed to load native library: " + e);
 	}
 
-    }
-    
-    private static void loadLibraryFromClasspath (String path) throws IOException
-    {
-	Path inputPath = Paths.get (path);
-
-	if (!inputPath.isAbsolute ())
-            throw new IllegalArgumentException ("The path has to be absolute, but found: " + inputPath);
-
-	final String fileNameFull = inputPath.getFileName ().toString ();
-	final int dotIndex = fileNameFull.indexOf ('.');
-        
-	if (dotIndex < 0 || dotIndex >= fileNameFull.length() - 1)
-            throw new IllegalArgumentException ("The path has to end with a file name and extension, but found: " + fileNameFull);
-
-	final String fileName = fileNameFull.substring (0, dotIndex);
-	final String extension = fileNameFull.substring (dotIndex);
-
-	final Path target = Files.createTempFile (fileName, extension);
-	final File targetFile = target.toFile ();
-        
-	targetFile.deleteOnExit ();
-
-        // System.out.println ("Tempfile at " + target);
-        
-	try (InputStream source = WS2811.class.getResourceAsStream (inputPath.toString ()))
-        {
-            if (source == null)
-		throw new FileNotFoundException ("File " + inputPath + " was not found in classpath.");
-
-            Files.copy (source, target, StandardCopyOption.REPLACE_EXISTING);
-	}
-        
-	// Finally, load the library
-	System.load (target.toAbsolutePath ().toString ());
-        
-        //System.out.println ("Loaded OK");
+        nativeLoaded = true;
     }
 
     /** The total input width. */

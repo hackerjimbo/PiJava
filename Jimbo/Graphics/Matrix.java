@@ -18,6 +18,8 @@
 
 package Jimbo.Graphics;
 
+import java.io.IOException;
+
 /**
  * This interface is the top level of the Matrix hierarchy. It just has
  * a size on it.
@@ -36,6 +38,8 @@ public interface Matrix
         
     /**
      * Update the display.
+     * 
+     * @throws java.io.IOException In case of trouble.
      */
-    public void show ();
+    public void show () throws IOException;
 }

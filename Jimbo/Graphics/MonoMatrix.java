@@ -25,7 +25,7 @@ package Jimbo.Graphics;
  * 
  * @author Jim Darby
  */
-public interface MonoMatrix extends Matrix
+public interface MonoMatrix extends Matrix <Integer>
 {
     /**
      * Sets a pixel to a specific value.

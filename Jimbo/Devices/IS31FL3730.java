@@ -85,7 +85,7 @@ public class IS31FL3730
     {
         // Did they set any naughty bits?
         if ((mode & ~(0x9f)) != 0)
-            throw new IOException ("Bad mode value " + mode);
+            throw new IllegalArgumentException ("Bad mode value " + mode);
         
         retryWrite (REG_CONFIG, (byte) mode);
     }
@@ -100,7 +100,7 @@ public class IS31FL3730
     public void setM1 (byte offset, byte value) throws IOException
     {
         if (offset < 0 || offset > 10)
-            throw new IOException ("Invalid offset " + offset);
+            throw new IllegalArgumentException ("Invalid offset " + offset);
         
         retryWrite (REG_M1_BASE + offset, value);
     }
@@ -115,7 +115,7 @@ public class IS31FL3730
     public void setM2 (byte offset, byte value) throws IOException
     {
         if (offset < 0 || offset > 10)
-            throw new IOException ("Invalid offset " + offset);
+            throw new IllegalArgumentException ("Invalid offset " + offset);
         
         retryWrite (REG_M2_BASE + offset, value);
     }
@@ -131,7 +131,7 @@ public class IS31FL3730
     public void fastUpdateM1 (byte data[]) throws IOException
     {
         if (data.length < 1 || data.length > 12)
-            throw new IOException ("Invalid fastUpdate data");
+            throw new IllegalArgumentException ("Invalid fastUpdate data");
         
         retryWrite (REG_M1_BASE, data, 0, data.length);
     }
@@ -145,7 +145,7 @@ public class IS31FL3730
     public void fastUpdateM2 (byte data[]) throws IOException
     {
         if (data.length < 1 || data.length > 11)
-            throw new IOException ("Invalid fastUpdate data");
+            throw new IllegalArgumentException ("Invalid fastUpdate data");
         
         retryWrite (REG_M2_BASE, data, 0, data.length);
     }
@@ -163,7 +163,7 @@ public class IS31FL3730
     public void setLightingEffect (int effect) throws IOException
     {
         if (effect < 0 || effect > 127)
-            throw new IOException ("Invalid effect " + effect);
+            throw new IllegalArgumentException ("Invalid effect " + effect);
         
         retryWrite (REG_LER, (byte) effect);
     }
@@ -177,7 +177,7 @@ public class IS31FL3730
     public void setPWM (int pwm) throws IOException
     {
         if (pwm < 0 || pwm > MAX_PWM)
-            throw new IOException ("Bad PWM " + pwm);
+            throw new IllegalArgumentException ("Bad PWM " + pwm);
         
         retryWrite (REG_PWM, (byte) pwm);
     }
@@ -241,7 +241,7 @@ public class IS31FL3730
                 Thread.sleep (1);
             }
             
-            catch (Exception e)
+            catch (InterruptedException e)
             {
                 LOG.log (Level.WARNING, "Sleep interrupted: {0}", e.getLocalizedMessage ());
             }
@@ -256,13 +256,11 @@ public class IS31FL3730
      * never log if there isn't a retry.
      * 
      * @param n The number of tries, >= 0.
-     * 
-     * @throws IOException On a bad paramters.
      */
-    public void setTriesWarning (int n) throws IOException
+    public void setTriesWarning (int n)
     {
         if (n < 0)
-            throw new IOException ("Bad number of tries " + n);
+            throw new IllegalArgumentException ("Bad number of tries " + n);
         
         warn_tries = n;
     }

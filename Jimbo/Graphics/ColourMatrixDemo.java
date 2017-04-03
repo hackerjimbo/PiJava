@@ -48,7 +48,7 @@ public class ColourMatrixDemo
         for (int y = 0; y <= max_y; ++y)
             for (int x = 0; x <= max_x; ++x)
             {
-                Point p = new Point (x, y);
+                final Point p = new Point (x, y);
                 m.setPixel (p,
                         (phase == 0) ? 0x80 : 0x00,
                         (phase == 1) ? 0x80 : 0x00,
@@ -76,7 +76,7 @@ public class ColourMatrixDemo
                     final double distance = Math.sqrt (x*x + y*y);
                     final double fraction = distance / max_distance;
                     
-                    double value = 360 * fraction + phase;
+                    double value = 360 * (1 - fraction) + phase;
                     
                     if (value > 360)
                         value -= 360;

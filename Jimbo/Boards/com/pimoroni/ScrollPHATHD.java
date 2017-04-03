@@ -27,6 +27,7 @@ import Jimbo.Devices.IS31FL3731;
 
 import Jimbo.Graphics.Point;
 import Jimbo.Graphics.MonoMatrix;
+import Jimbo.Graphics.MonoMatrixDemo;
 
 /**
  * This class controls a Pimoroni ScrollpHAT HD.
@@ -96,6 +97,18 @@ public class ScrollPHATHD implements MonoMatrix
     }
     
     /**
+     * Set a pixel in the generic way.
+     * 
+     * @param p The pixel.
+     * @param value The value.
+     */
+    @Override
+    public void setPixel (Point p, Integer value)
+    {
+        setPixel (p, value.intValue ());
+    }
+    
+    /**
      * Optionally flip the x, y or both arguments. Useful for rotating
      * and other general diddling of the display,
      * 
@@ -123,18 +136,7 @@ public class ScrollPHATHD implements MonoMatrix
     {
         ScrollPHATHD p = new ScrollPHATHD ();
         
-        for (int y = 0; y <= MAX_Y; ++y)
-        {
-            for (int x = 0; x <= MAX_X; ++x)
-            {
-                p.setPixel (x, y, 255);
-                p.show ();
-                Thread.sleep (50);
-                p.setPixel (x, y, 0);
-            }
-        }
-        
-        p.show ();
+        MonoMatrixDemo.run (p);
     }
     
     /** Device width. */

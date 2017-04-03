@@ -26,7 +26,7 @@ package Jimbo.Graphics;
  * 
  * @author Jim Darby
  */
-public interface ColourMatrix extends Matrix
+public interface ColourMatrix extends Matrix <Colour>
 {
     /**
      * Sets a pixel to a specific colour.
@@ -61,6 +61,7 @@ public interface ColourMatrix extends Matrix
      * @param p The point to set.
      * @param c The colour to set it to.
      */
+    @Override
     default public void setPixel (Point p, Colour c)
     {
         setPixel (p, c.getRed (), c.getGreen (), c.getBlue ());

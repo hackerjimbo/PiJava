@@ -25,8 +25,9 @@ import java.io.IOException;
  * a size on it.
  * 
  * @author Jim Darby
+ * @param <T> The type of pixel it is
  */
-public interface Matrix
+public interface Matrix <T>
 {
     /**
      * Return a point with the maximum values for X and Y in this
@@ -36,6 +37,12 @@ public interface Matrix
      */
     public Point getMax ();
         
+    /**
+     * 
+     * @param p
+     * @param value
+     */
+    void setPixel (Point p, T value);
     /**
      * Update the display.
      * 

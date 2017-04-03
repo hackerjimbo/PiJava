@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Jim Darby.
+ * Copyright (C) 2016-2017 Jim Darby.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,10 @@ import java.io.IOException;
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CFactory;
 
+import Jimbo.Graphics.Point;
+import Jimbo.Graphics.BitMatrix;
+import Jimbo.Graphics.BitMatrixDemo;
+
 import Jimbo.Devices.IS31FL3730;
 
 /**
@@ -30,7 +34,7 @@ import Jimbo.Devices.IS31FL3730;
  * 
  * @author Jim Darby
  */
-public class ScrollPhat
+public class ScrollPhat implements BitMatrix
 {    
     /**
      * Create a ScroolPhat object.
@@ -57,7 +61,7 @@ public class ScrollPhat
         for (int i = 0; i < data.length; ++i)
             data[i] = 0;
  
-        update ();
+        show ();
     }
     
     /**
@@ -67,7 +71,8 @@ public class ScrollPhat
      * 
      * @throws IOException In case of problems.
      */
-    public void update () throws IOException
+    @Override
+    public final void show () throws IOException
     {
         phat.fastUpdateM1 (data);
     }
@@ -78,13 +83,12 @@ public class ScrollPhat
      * @param x The x coordinate.
      * @param y The y coordinate.
      * @param on True for on, otherwise false.
-     * 
-     * @throws IOException In case of invalid co-ordinates.
      */
-    public void set (int x, int y, boolean on) throws IOException
+    @Override
+    public void setPixel (int x, int y, boolean on)
     {
         if (x < 0 || x > MAX_X || y < 0 || y > MAX_Y)
-            throw new IOException ("Invalid co-ordinates for set");
+            throw new IllegalArgumentException ("Invalid co-ordinates for set");
         
         if (flip_x)
             x = MAX_X - x;
@@ -97,6 +101,19 @@ public class ScrollPhat
             data[x] |= (1 << y);
         else
             data[x] &= ~(1 << y);
+    }
+    
+    
+    /**
+     * Set a pixel in the generic way.
+     * 
+     * @param p The pixel.
+     * @param value The value.
+     */
+    @Override
+    public void setPixel(Point p, Boolean value) 
+    {
+        setPixel (p, value.booleanValue ());
     }
     
     /**
@@ -126,15 +143,35 @@ public class ScrollPhat
     }
     
     /**
+     * Return a point with the maximum values for X and Y in this
+     * matrix.
+     * 
+     * @return The maximum size.
+     */
+    @Override
+    public Point getMax ()
+    {
+        return MAX;
+    }
+    
+    /** The device width. */
+    public static final int WIDTH = 11;
+    /** The device height. */
+    public static final int HEIGHT = 5;
+    
+    /**
      * The maximum x value. X coordinates must be in the range 0 to this
      * INCLUSIVE.
      */
-    private static final int MAX_X = 10;
+    private static final int MAX_X = WIDTH - 1;
     /**
      * The maximum y value. Y coordinates must be in the range 0 to this
      * INCLUSIVE.
      */
-    private static final int MAX_Y = 4;
+    private static final int MAX_Y = HEIGHT - 1;
+    
+    /** The maximum values as a Point. */
+    private final static Point MAX = new Point (MAX_X, MAX_Y);
     
     /** Internal pointer to the low-level device. */
     private final IS31FL3730 phat;
@@ -159,14 +196,6 @@ public class ScrollPhat
         
         s.setTriesWarning (0);
         
-        while (true)
-            for (int on = 0; on < 2; ++on)
-                for (int x = 0; x <= MAX_X; ++x)
-                    for (int y = 0; y <= MAX_Y; ++y)
-                    {
-                        s.set (x, y, on == 0);
-                        s.update ();
-                        Thread.sleep (50);
-                    }
+        BitMatrixDemo.run (s);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Jim Darby.
+ * Copyright (C) 2016-2017 Jim Darby.
  *
  * This software is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,13 @@ package Jimbo.Devices;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
+
+import Jimbo.Graphics.Colour;
+import Jimbo.Graphics.ColourMatrix;
+import Jimbo.Graphics.ColourMatrixDemo;
+import Jimbo.Graphics.Point;
 
 import java.io.IOException;
 
@@ -30,20 +36,27 @@ import java.io.IOException;
  *
  * @author Jim Darby
  */
-public class APA102
+public class APA102 implements ColourMatrix
 {
     /**
      * Construct an APA10-2 controller.
      * 
+     * @param gpio The GpioController to use.
+     * @param data_pin The data pin to use
+     * @param clock_pin The clock pin to use.
      * @param n The number of LEDs in the chain. 
      */
-    public APA102 (int n)
+    public APA102 (GpioController gpio, Pin data_pin, Pin clock_pin, int n)
     {
-        leds = n;
+        WIDTH = n;
+        MAX_X = WIDTH - 1;
+        MAX = new Point (MAX_X, MAX_Y);
+        dat = gpio.provisionDigitalOutputPin (data_pin);
+        clk = gpio.provisionDigitalOutputPin (clock_pin);
         data = new int[n];
         
         // Set all off to start with.
-        for (int i = 0; i < leds; ++i)
+        for (int i = 0; i < WIDTH; ++i)
             data[i] = 0;
         
         // And push that out to the devices.
@@ -59,31 +72,58 @@ public class APA102
      * @param g The green value (0 to 255).
      * @param b The blue value (0 to 255).
      * @param bright The brightness (0 to 31).
-     * @throws java.io.IOException In the case of an invalid parameter.
      */
-    public void set (int n, int r, int g, int b, int bright) throws IOException
+    public void set (int n, int r, int g, int b, int bright)
     {
-        if (n < 0 || n >= leds ||
+        if (n < 0 || n >= WIDTH ||
             r < 0 || r > 255 ||
             g < 0 || g > 255 ||
             b < 0 || b > 255 ||
             bright < 0 || bright > 31)
-            throw new IOException ("Invalid paramter");
+            throw new IllegalArgumentException ("Invalid parameter");
         
         data[n] = (bright << 24) | (r << 16) | (g << 8) | b;
     }
     
     /**
+     * Return a point with the maximum values for X and Y in this
+     * matrix.
+     * 
+     * @return 
+     */
+    @Override
+    public Point getMax()
+    {
+        return MAX;
+    }
+
+    /**
+     * Set a pixel the generic way.
+     * 
+     * @param p The pixel to set.
+     * @param value The colour to set it to.
+     */
+    @Override
+    public void setPixel(Point p, Colour value)
+    {
+        if (p.getY () != 0)
+            throw new IllegalArgumentException ("Invalid Y coordinate");
+        
+        set (p.getX (), value.getRed (), value.getGreen (), value.getBlue (), 31);
+    }
+
+    /**
      * Update the LED chain.
      */
-    public void show ()
+    @Override
+    public final void show ()
     {
         // Transmit preamble
         for (int i = 0; i < 4; ++i)
             write_byte ((byte) 0);
         
         // Send data
-        for (int i = 0; i < leds; ++i)
+        for (int i = 0; i < WIDTH; ++i)
             write_led (data[i]);
         
         // And latch it
@@ -140,28 +180,36 @@ public class APA102
     
     public static void main (String args[]) throws InterruptedException, IOException
     {
-        APA102 blinkt = new APA102 (8);
+        APA102 blinkt = new APA102 (GpioFactory.getInstance(), RaspiPin.GPIO_04, RaspiPin.GPIO_05, 8);
         
-        while (true)
-        for (int b = 0; b < 32; ++b)
+        for (int x = 0; x < 8; ++x)
         {
-            blinkt.set ((b + 0) % 8, 255, 0, 0, b);
-            blinkt.set ((b + 1) % 8, 0, 255, 0, b);
-            blinkt.set ((b + 2) % 8, 0, 0, 255, b);
-            blinkt.set ((b + 3) % 8, 255, 255, 0, b);
-            blinkt.set ((b + 4) % 8, 255, 0, 255, b);
-            blinkt.set ((b + 5) % 8, 0, 255, 255, b);
-            blinkt.set ((b + 6) % 8, 255, 255, 255, b);
-
+            blinkt.set (x, 255, 0, 0, 31);
             blinkt.show ();
-            
-            Thread.sleep (100);
+            Thread.sleep (500);
+            blinkt.set (x, 0, 0, 0, 31);
+            blinkt.show ();
         }
+        
+        ColourMatrixDemo.run (blinkt);
     }
     
-    final GpioController gpio = GpioFactory.getInstance();
-    final GpioPinDigitalOutput dat = gpio.provisionDigitalOutputPin (RaspiPin.GPIO_04);
-    final GpioPinDigitalOutput clk = gpio.provisionDigitalOutputPin (RaspiPin.GPIO_05);
-    final int leds;
-    final int[] data;
+    /** The pin we use for data. */
+    private final GpioPinDigitalOutput dat;
+    /** The pin we use for the clock. */
+    private final GpioPinDigitalOutput clk;
+    /** The data for each LED in the chain. */
+    private final int[] data;
+    
+    /** The width of the board. */
+    public final int WIDTH;
+    /** The height of the board. */
+    public static final int HEIGHT = 1;
+    /** The maximum X value. */
+    public final int MAX_X;
+    /** The maximum Y value. */
+    public static final int MAX_Y = HEIGHT - 1;
+    
+    /** The maximum values as a Point. */
+    private final Point MAX;
 }

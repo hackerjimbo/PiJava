@@ -19,10 +19,7 @@
 package Jimbo.Graphics;
 
 /**
- * This interface describes a matrix of RGB Pixels. Note that at least one of
- * setPixel (Point p, int r, int g, int b) and
- * setPixel (int x, int y, int r, int g, int b) must be defined to avoid
- * infinite recursion from the default implementations.
+ * This interface describes a matrix of RGB Pixels.
  * 
  * @author Jim Darby
  */
@@ -38,7 +35,7 @@ public interface ColourMatrix extends Matrix <Colour>
      */
     default public void setPixel (Point p, int r, int g, int b)
     {
-        setPixel (p.getX (), p.getY (), r, g, b);
+        setPixel (p, new Colour (r, g, b));
     }
     
      /**
@@ -52,21 +49,9 @@ public interface ColourMatrix extends Matrix <Colour>
      */
     default public void setPixel (int x, int y, int r, int g, int b)
     {
-        setPixel (new Point (x, y), r, g, b);
+        setPixel (new Point (x, y), new Colour (r, g, b));
     }
 
-    /**
-     * Set a specific pixel to a specific Colour value.
-     * 
-     * @param p The point to set.
-     * @param c The colour to set it to.
-     */
-    @Override
-    default public void setPixel (Point p, Colour c)
-    {
-        setPixel (p, c.getRed (), c.getGreen (), c.getBlue ());
-    }
-    
     /**
      * Sets a pixel to a specific colour.
      * 
@@ -76,6 +61,6 @@ public interface ColourMatrix extends Matrix <Colour>
      */
     default public void setPixel (int x, int y, Colour c)
     {
-        setPixel (x, y, c.getRed (), c.getGreen (), c.getBlue ());
+        setPixel (new Point (x, y), c);
     }
 }

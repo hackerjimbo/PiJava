@@ -38,11 +38,13 @@ public interface Matrix <T>
     public Point getMax ();
         
     /**
+     * Set a pixel to a specific value.
      * 
      * @param p
      * @param value
      */
     void setPixel (Point p, T value);
+    
     /**
      * Update the display.
      * 

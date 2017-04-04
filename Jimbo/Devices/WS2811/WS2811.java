@@ -20,6 +20,7 @@ package Jimbo.Devices.WS2811;
 
 import Jimbo.Graphics.Mapping;
 import Jimbo.Graphics.Point;
+import Jimbo.Graphics.Colour;
 import Jimbo.Graphics.ColourMatrix;
 
 import java.io.File;
@@ -101,7 +102,8 @@ public class WS2811 implements ColourMatrix
     }
     
     /**
-     * Set a specific pixel to a specific RGB value.
+     * Set a specific pixel to a specific RGB value. This works in the
+     * most efficient way.
      * 
      * @param p The point to set.
      * @param r Red value: [0,255].
@@ -121,6 +123,19 @@ public class WS2811 implements ColourMatrix
 	// System.out.println ("pos " + x + ',' + y + " -> " + map[x + i_width * y]);
 	 
         data[map[x + i_width * y]] = (r << 16) | (g << 8) | b;
+    }
+    
+    /**
+     * Set  a specific pixel to a specific colour. This is the generic
+     * interface.
+     * 
+     * @param p The pixel to set.
+     * @param c The colour to set.
+     */
+    @Override
+    public void setPixel (Point p, Colour c)
+    {
+        setPixel (p, c.getRed (), c.getGreen (), c.getBlue ());
     }
     
     /**

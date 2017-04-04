@@ -63,7 +63,8 @@ public class ScrollPHATHD implements MonoMatrix
     }
     
     /**
-     * Set a specific pixel on or off.
+     * Set a specific pixel on or off. This works in the most efficient
+     * way.
      * 
      * @param x The x coordinate.
      * @param y The y coordinate.
@@ -105,7 +106,7 @@ public class ScrollPHATHD implements MonoMatrix
     @Override
     public void setPixel (Point p, Integer value)
     {
-        setPixel (p, value.intValue ());
+        setPixel (p.getX (), p.getY (), value.intValue ());
     }
     
     /**

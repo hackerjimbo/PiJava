@@ -19,9 +19,7 @@
 package Jimbo.Graphics;
 
 /**
- * This interface describes a matrix of bit values. Note that at least one of
- * setPixel (Point p, boolean on) and setPixel (int x, int y, boolean on) must
- * be defined to avoid infinite recursion from the default implementations.
+ * This interface describes a matrix of bit values.
  * 
  * @author Jim Darby
  */
@@ -35,7 +33,7 @@ public interface BitMatrix extends Matrix <Boolean>
      */
     default public void setPixel (Point p, boolean on)
     {
-        setPixel (p.getX (), p.getY (), on);
+        setPixel (p, new Boolean (on));
     }
     
      /**
@@ -47,6 +45,6 @@ public interface BitMatrix extends Matrix <Boolean>
      */
     default public void setPixel (int x, int y, boolean on)
     {
-        setPixel (new Point (x, y), on);
+        setPixel (new Point (x, y), new Boolean (on));
     }
 }

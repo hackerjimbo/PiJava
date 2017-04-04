@@ -19,9 +19,7 @@
 package Jimbo.Graphics;
 
 /**
- * This interface describes a matrix of monochrome Pixels. One of
- * setPixel (Point p, int value) or setPixel (int x, int y, int value) must be
- * implemented to avoid infinite recursion.
+ * This interface describes a matrix of monochrome Pixels.
  * 
  * @author Jim Darby
  */
@@ -35,7 +33,7 @@ public interface MonoMatrix extends Matrix <Integer>
      */
     default public void setPixel (Point p, int value)
     {
-        setPixel (p.getX (), p.getY (), value);
+        setPixel (p, new Integer (value));
     }
     
     /**
@@ -47,7 +45,21 @@ public interface MonoMatrix extends Matrix <Integer>
      */
     default public void setPixel (int x, int y, int value)
     {
-        setPixel (new Point (x, y), value);
+        setPixel (new Point (x, y), new Integer (value));
+    }
+    
+    /**
+     * Sets a pixel to a specific value.
+     * 
+     * @param p The pixel to set.
+     * @param value The value to set in the range 0.0 to 1.0.
+     */
+    default public void setPixel (Point p, double value)
+    {
+        if (value < 0 || value > 1)
+            throw new IllegalArgumentException ("Invalid pixel value " + value);
+        
+        setPixel (p, new Integer ((int) (value * 255 + 0.5)));
     }
     
     /**
@@ -62,20 +74,6 @@ public interface MonoMatrix extends Matrix <Integer>
         if (value < 0 || value > 1)
             throw new IllegalArgumentException ("Invalid pixel value " + value);
         
-        setPixel (x, y, new Double (value * 255).intValue ());
-    }
-    
-    /**
-     * Sets a pixel to a specific value.
-     * 
-     * @param p The pixel to set.
-     * @param value The value to set in the range 0.0 to 1.0.
-     */
-    default public void setPixel (Point p, double value)
-    {
-        if (value < 0 || value > 1)
-            throw new IllegalArgumentException ("Invalid pixel value " + value);
-        
-        setPixel (p, new Double (value * 255).intValue ());
+        setPixel (new Point (x, y), new Integer ((int) (value * 255 + 0.5)));
     }
 }

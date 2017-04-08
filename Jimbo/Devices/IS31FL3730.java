@@ -255,7 +255,7 @@ public class IS31FL3730
      * Set the number of tries before logging a warning. Note this will
      * never log if there isn't a retry.
      * 
-     * @param n The number of tries, >= 0.
+     * @param n The number of tries, which must be non-negative.
      */
     public void setTriesWarning (int n)
     {

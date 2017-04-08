@@ -133,7 +133,7 @@ public class ScrollPhat implements BitMatrix
      * Set the number of tries before logging a warning. Note this will
      * never log if there isn't a retry.
      * 
-     * @param n The number of tries, >= 0.
+     * @param n The number of tries, must be non-negative.
      * 
      * @throws IOException On a bad paramters.
      */

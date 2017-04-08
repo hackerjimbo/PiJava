@@ -40,8 +40,8 @@ public interface Matrix <T>
     /**
      * Set a pixel to a specific value.
      * 
-     * @param p
-     * @param value
+     * @param p The pixel to set.
+     * @param value The value to set it to.
      */
     void setPixel (Point p, T value);
     

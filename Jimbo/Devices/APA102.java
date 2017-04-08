@@ -89,7 +89,7 @@ public class APA102 implements ColourMatrix
      * Return a point with the maximum values for X and Y in this
      * matrix.
      * 
-     * @return 
+     * @return A Point object with the maximum values for X and Y.
      */
     @Override
     public Point getMax()

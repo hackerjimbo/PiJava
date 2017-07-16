@@ -25,10 +25,30 @@ import java.io.IOException;
  * 
  * @author Jim Darby
  */
-public class ColourMatrixDemo
+public class ColourMatrixDemo implements Runnable
 {
+    public ColourMatrixDemo (ColourMatrix m)
+    {
+        this.m = m;
+    }
+    
+    @Override
+    public void run ()
+    {
+        try
+        {
+            run (m);
+        }
+        
+        catch (InterruptedException | IOException e)
+        {
+            System.out.println ("ColourMatrixDemo thread got an exception: " + e);
+        }
+    }
+    
     /**
-     * Run the demo given a ColourMatrix.
+     * Run the demo given a ColourMatrix. This is a static, non-threaded
+     * version but is used by the threaded non-static version.
      * 
      * @param m The ColourMatrix to use.
      * 
@@ -96,4 +116,7 @@ public class ColourMatrixDemo
             Thread.sleep (10);
         }
     }
+    
+    /** The matrix we'll be working on. */
+    private final ColourMatrix m;
 }

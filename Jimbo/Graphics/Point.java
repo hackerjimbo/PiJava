@@ -20,7 +20,7 @@ package Jimbo.Graphics;
 
 /**
  * This class represents a point on the x,y plane. It's held as a purely
- * integer point where both x and y and >= 0.
+ * integer point where both x and y are greater then or equal to zero.
  * 
  * @author Jim Darby
  */
@@ -28,7 +28,8 @@ public class Point
 {
     /**
      * Create a point with the given x and y coordinates. Both of these
-     * must be  >= 0 as they represent a point on a display.
+     * must be greater than or equal to zero as they represent a point on a
+     * display.
      * 
      * @param x The x coordinate.
      * @param y The y coordinate.
@@ -75,7 +76,7 @@ public class Point
 
     /**
      * Is a given point "inside" this point. This is better defined as the
-     * points coordinates being <= our coordinates.
+     * points coordinates both being less than or equal to our coordinates.
      * 
      * @param p The point's coordinates.
      * @return If the parameter's x and y coordinates are both less than or

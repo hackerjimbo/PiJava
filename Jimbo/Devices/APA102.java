@@ -109,7 +109,7 @@ public class APA102 implements ColourMatrix
         if (p.getY () != 0)
             throw new IllegalArgumentException ("Invalid Y coordinate");
         
-        set (p.getX (), value.getRed (), value.getGreen (), value.getBlue (), 31);
+        set (p.getX (), value.getRed (), value.getGreen (), value.getBlue (), brightness);
     }
 
     /**
@@ -128,6 +128,20 @@ public class APA102 implements ColourMatrix
         
         // And latch it
         latch ();
+    }
+    
+    /**
+     * Scale the brightness to avoid blindness.
+     * 
+     * @param brightness The brightness scale factor: 0 to 31.
+     */
+    
+    public final void brightness (int brightness)
+    {
+        if (brightness < 0 || brightness > 31)
+            throw new IllegalArgumentException ("Invalid brightness");
+        
+        this.brightness = brightness;
     }
     
     /**
@@ -200,6 +214,8 @@ public class APA102 implements ColourMatrix
     private final GpioPinDigitalOutput clk;
     /** The data for each LED in the chain. */
     private final int[] data;
+    /** Scale factor for brightness. Defaults to 8 (of 31) because Pimoroni. */
+    private int brightness = 8;
     
     /** The width of the board. */
     public final int WIDTH;

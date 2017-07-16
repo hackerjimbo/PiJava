@@ -39,7 +39,7 @@ import java.io.IOException;
 public class APA102 implements ColourMatrix
 {
     /**
-     * Construct an APA10-2 controller.
+     * Construct an APA102 controller.
      * 
      * @param gpio The GpioController to use.
      * @param data_pin The data pin to use

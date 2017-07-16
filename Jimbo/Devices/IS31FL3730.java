@@ -45,9 +45,7 @@ public class IS31FL3730
      */
     public IS31FL3730 (I2CBus bus) throws IOException
     {
-        device = bus.getDevice (I2C_ADDR);
-        
-        init ();
+        this (bus, I2C_ADDR);
     }
     
     /**
@@ -61,14 +59,7 @@ public class IS31FL3730
     {
         device = bus.getDevice (addr);
         
-        init ();
-    }
-    
-    /**
-     * Set internal things up.
-     */
-    private void init ()
-    {
+        // Clear retry timers
         for (int i = 0; i < MAX_TRIES; ++i)
             tries [i] = 0;
     }

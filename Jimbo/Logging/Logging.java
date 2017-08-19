@@ -24,10 +24,13 @@ import java.util.logging.LogRecord;
 
 import java.text.MessageFormat;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.ZoneOffset;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.logging.Level;
 
 /**
  * Some useful stuff to customise logging for us.
@@ -81,9 +84,10 @@ public class Logging
             if (parameters != null && parameters.length != 0 && text.contains ("{0"))
                 text = new MessageFormat (text).format (parameters);
             
-            final int seconds = (int) ((r.getMillis () + 500) / 1000);
-            final ZonedDateTime zoned = ZonedDateTime.of (LocalDateTime.ofEpochSecond (seconds, 0, ZoneOffset.UTC), ZoneOffset.UTC) ;
-            final String when = zoned.format (DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            final Instant instant = Instant.ofEpochMilli (r.getMillis()).truncatedTo (ChronoUnit.SECONDS);
+            final ZoneId zone = ZoneOffset.systemDefault ();
+            final LocalDateTime stamp = LocalDateTime.ofInstant (instant, zone);
+            final String when = stamp.format (DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             
             System.out.println ("[" + when + "] " + text);
             
@@ -104,5 +108,17 @@ public class Logging
         public void close() throws SecurityException
         {
         }
+    }
+    
+    public static void main (String args[])
+    {
+        useStdout ();
+        
+        final Logger LOG = Logger.getLogger ("Test logger");
+        
+        LOG.info ("Testing");
+        
+        for (String s : args)
+            LOG.log (Level.INFO, "{0}", s);
     }
 }

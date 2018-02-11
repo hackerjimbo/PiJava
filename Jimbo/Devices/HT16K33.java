@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Jim Darby.
+ * Copyright (C) 2018 Jim Darby.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -74,7 +74,7 @@ public class HT16K33
     public void setDisplay (boolean on, int blink) throws IOException
     {
         if (blink < 0 || blink > 3)
-            throw new IOException ("HT16K33 invalid blink value");
+            throw new IllegalArgumentException ("HT16K33 invalid blink value");
         
         device.write ((byte) (DISPLAY_REG | (blink << 1) | (on ? DISPLAY_ON : 0)));
     }
@@ -89,7 +89,7 @@ public class HT16K33
     public void setBrightness (int level) throws IOException
     {
         if (level < 0 || level > 15)
-            throw new IOException ("HT16K33 invalid brightness value");
+            throw new IllegalArgumentException ("HT16K33 invalid brightness value");
         
         device.write ((byte) (BRIGHTNESS_REG | level));
     }
@@ -100,13 +100,11 @@ public class HT16K33
      * 
      * @param bit The bit to set (in the range 0 to 127).
      * @param on Set the bit on or off.
-     * 
-     * @throws IOException In case of trouble.
      */
-    public void setBit (int bit, boolean on) throws IOException
+    public void setBit (int bit, boolean on)
     {
-        if (bit < 0 || bit >= buffer.length * 8 - 1)
-            throw new IOException ("HT16K33 invalid bit number");
+        if (bit < 0 || bit > buffer.length * 8 - 1)
+            throw new IllegalArgumentException ("HT16K33 invalid bit number");
         
         final int index = bit / 8;
         final byte value = (byte) (1 << (bit % 8));
@@ -122,13 +120,11 @@ public class HT16K33
      * 
      * @param which Which byte to set (0 to 15).
      * @param value The value to set it to.
-     * 
-     * @throws java.io.IOException In case of problems.
      */
-    public void setByte (int which, byte value) throws IOException
+    public void setByte (int which, byte value)
     {
         if (which < 0 || which >= buffer.length)
-            throw new IOException ("HT16K33 invalid byte number");
+            throw new IllegalArgumentException ("HT16K33 invalid byte number");
         
         buffer[which] = value;
     }
@@ -138,14 +134,12 @@ public class HT16K33
      * 
      * @param which Which byte to set (0 to 15).
      * @param value The value to set it to.
-     * 
-     * @throws java.io.IOException In case of problems.
      */
     
-    public void setWord (int which, short value) throws IOException
+    public void setWord (int which, short value)
     {
         if (which < 0 || which >= buffer.length / 2)
-            throw new IOException ("HT16K33 invalid byte number");
+            throw new IllegalArgumentException ("HT16K33 invalid byte number");
         
         buffer[which*2 + 1] = (byte) (value >> 8);
         buffer[which*2] = (byte) value;
@@ -174,15 +168,23 @@ public class HT16K33
     {
         HT16K33 h = new HT16K33 (I2CFactory.getInstance (I2CBus.BUS_1), 0x70);
         
-        for (int i = 0; i < 128; ++i)
+        boolean reset = false;
+        
+        while (true)
         {
-            if (i > 0)
-                h.setBit (i - 1, false);
+            for (int i = 0; i < 128; ++i)
+            {
+                if (i > 0 && reset)
+                    h.setBit (i - 1, false);
+
+                System.out.println ("Setting bit " + i);
+                h.setBit (i, true);
+                h.update ();
+
+                Thread.sleep (1000);
+            }
             
-            h.setBit (i, true);
-            h.update ();
-            
-            Thread.sleep (50);
+            reset = !reset;
         }
     }
 

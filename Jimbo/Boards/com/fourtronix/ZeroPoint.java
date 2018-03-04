@@ -65,7 +65,7 @@ public class ZeroPoint extends ComponentBase implements Servo
             {
                 phase += 1;
                 
-                if (phase >= sequence.length)
+                if (phase >= SEQUENCE.length)
                     phase = 0;
             }
             else
@@ -73,11 +73,11 @@ public class ZeroPoint extends ComponentBase implements Servo
                 phase -= 1;
                 
                 if (phase < 0)
-                    phase = sequence.length - 1;
+                    phase = SEQUENCE.length - 1;
             }
             
             for (int j = 0; j < pins.length; ++j)
-                pins[j].setState (sequence[phase][j]);
+                pins[j].setState (SEQUENCE[phase][j]);
             
             try
             {
@@ -132,10 +132,20 @@ public class ZeroPoint extends ComponentBase implements Servo
     }
 
     /**
-     * The sequence from Gareth. This doesn't appear to be the standard one.
+     * Implement the off option for the servo. This makes it all passive.
+     */
+    @Override
+    public void off ()
+    {
+        for (int i = 0; i < pins.length; ++i)
+            pins[i].setState (false);
+    }
+    
+    /**
+     * The SEQUENCE from Gareth. This doesn't appear to be the standard one.
      * There may be some odd wiring going on here. Or I just don't understand!
      */
-    static private final boolean[][] sequence =
+    static private final boolean[][] SEQUENCE =
     {
         { true, false, false,  true},
         { true, false,  true, false},

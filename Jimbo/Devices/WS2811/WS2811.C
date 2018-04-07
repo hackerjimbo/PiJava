@@ -13,7 +13,7 @@ namespace
 
   const int TARGET_FREQ (WS2811_TARGET_FREQ);
   const int GPIO_PIN (18);
-  const int DMA (5);
+  const int DMA (10);
 
   ws2811_t leds;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Jim Darby.
+ * Copyright (C) 2018 Jim Darby.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -44,6 +44,13 @@ public interface Matrix <T>
      * @param value The value to set it to.
      */
     void setPixel (Point p, T value);
+    
+    /**
+     * Clear (blank) a pixel at a specific point.
+     * 
+     * @param p The pixel to clear.
+     */
+    void clearPixel (Point p);
     
     /**
      * Update the display.

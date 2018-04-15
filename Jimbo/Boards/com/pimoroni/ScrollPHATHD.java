@@ -106,7 +106,7 @@ public class ScrollPHATHD implements MonoMatrix
     @Override
     public void setPixel (Point p, Integer value)
     {
-        setPixel (p.getX (), p.getY (), value.intValue ());
+        setPixel (p.getX (), p.getY (), value);
     }
     
     /**

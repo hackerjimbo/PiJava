@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Jim Darby.
+ * Copyright (C) 2018 Jim Darby.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,17 +25,6 @@ package Jimbo.Graphics;
  */
 public interface BitMatrix extends Matrix <Boolean>
 {
-    /**
-     * Sets a pixel to a specific colour.
-     * 
-     * @param p The address of the Pixel.
-     * @param on If the pixel is on.
-     */
-    default public void setPixel (Point p, boolean on)
-    {
-        setPixel (p, new Boolean (on));
-    }
-    
      /**
      * Sets a pixel to a specific colour.
      * 
@@ -45,6 +34,20 @@ public interface BitMatrix extends Matrix <Boolean>
      */
     default public void setPixel (int x, int y, boolean on)
     {
-        setPixel (new Point (x, y), new Boolean (on));
+        setPixel (new Point (x, y), on);
     }
+    
+    /**
+     * Clear (blank) a pixel at a specific point.
+     * 
+     * @param p The pixel to clear.
+     */
+    @Override
+    default void clearPixel (Point p)
+    {
+        setPixel (p, BLACK);
+    }
+    
+    /** The value used to clear a pixel. */
+    static final boolean BLACK = false;
 }

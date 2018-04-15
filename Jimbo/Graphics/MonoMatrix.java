@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Jim Darby.
+ * Copyright (C) 2018 Jim Darby.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,17 +25,6 @@ package Jimbo.Graphics;
  */
 public interface MonoMatrix extends Matrix <Integer>
 {
-    /**
-     * Sets a pixel to a specific value.
-     * 
-     * @param p The address of the Pixel.
-     * @param value The value to set in the range 0 to 255.
-     */
-    default public void setPixel (Point p, int value)
-    {
-        setPixel (p, new Integer (value));
-    }
-    
     /**
      * Sets a pixel to a specific value.
      * 
@@ -76,4 +65,18 @@ public interface MonoMatrix extends Matrix <Integer>
         
         setPixel (new Point (x, y), new Integer ((int) (value * 255 + 0.5)));
     }
+    
+    /**
+     * Clear (blank) a pixel at a specific point.
+     * 
+     * @param p The pixel to clear.
+     */
+    @Override
+    default void clearPixel (Point p)
+    {
+        setPixel (p, BLACK);
+    }
+    
+    /** The value used to clear a pixel. */
+    static final Integer BLACK = 0;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Jim Darby.
+ * Copyright (C) 2018 Jim Darby.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -63,4 +63,18 @@ public interface ColourMatrix extends Matrix <Colour>
     {
         setPixel (new Point (x, y), c);
     }
+    
+    /**
+     * Clear (blank) a pixel at a specific point.
+     * 
+     * @param p The pixel to clear.
+     */
+    @Override
+    default void clearPixel (Point p)
+    {
+        setPixel (p, BLACK);
+    }
+    
+    /** The colour used for clearing a pixel. */
+    static final Colour BLACK = new Colour (0, 0, 0);
 }

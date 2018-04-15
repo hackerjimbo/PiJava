@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Jim Darby.
+ * Copyright (C) 2018 Jim Darby.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -42,7 +42,8 @@ public class MonoMatrixDemo
         final int max_y = limits.getY ();
         final Double on = new Double (1);
         final Double off = new Double (0);
-        
+        final Clock <Integer> clock = Clock.isClockable(m) ? new Clock <> (m) : null;
+
         for (int y = 0; y <= max_y; ++y)
             for (int x = 0; x <= max_x; ++x)
             {
@@ -66,11 +67,14 @@ public class MonoMatrixDemo
                     final double distance = Math.sqrt (x*x + y*y);
                     final double fraction = 1 - distance / max_distance;
                     final double value = Math.sin ((fraction + phase / 100.0) * 2 * Math.PI);
-                    final Double pixel = new Double (0.5 + 0.5 * value);
+                    final Double pixel = 0.5 + 0.5 * value;
                     final Point p = new Point (x, y);
                     
                     m.setPixel (p, pixel);
                 }
+            
+            if (clock != null)
+                clock.filter();
             
             m.show ();
             

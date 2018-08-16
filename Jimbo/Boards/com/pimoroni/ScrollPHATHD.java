@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Jim Darby.
+ * Copyright (C) 2017, 2018 Jim Darby.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,13 +28,14 @@ import Jimbo.Devices.IS31FL3731;
 import Jimbo.Graphics.Point;
 import Jimbo.Graphics.MonoMatrix;
 import Jimbo.Graphics.MonoMatrixDemo;
+import Jimbo.Graphics.MatrixHelper;
 
 /**
  * This class controls a Pimoroni ScrollpHAT HD.
  * 
  * @author Jim Darby
  */
-public class ScrollPHATHD implements MonoMatrix
+public class ScrollPHATHD extends MatrixHelper <Integer> implements MonoMatrix
 {
    /**
      * Create a ScrollPHATHD object.
@@ -46,6 +47,8 @@ public class ScrollPHATHD implements MonoMatrix
      */
     public ScrollPHATHD () throws IOException, I2CFactory.UnsupportedBusNumberException, InterruptedException
     {
+        super (17, 7);
+        
         phat =  new IS31FL3731 (I2CFactory.getInstance (I2CBus.BUS_1), 0x74);
     }
     
@@ -121,36 +124,13 @@ public class ScrollPHATHD implements MonoMatrix
         flip_x = x;
         flip_y = y;
     }
-    
-    /**
-     * Get the maximum values for X and Y.
-     * 
-     * @return A Point containing the maximum values.
-     */
-    @Override
-    public Point getMax ()
-    {
-        return MAX;
-    }
-    
+
     public static void main (String args[]) throws IOException, I2CFactory.UnsupportedBusNumberException, InterruptedException
     {
         ScrollPHATHD p = new ScrollPHATHD ();
         
         MonoMatrixDemo.run (p);
     }
-    
-    /** Device width. */
-    public final static int WIDTH = 17;
-    /** Device height. */
-    public final static int HEIGHT = 7;
-    /** The maximum X value. */
-    public final static int MAX_X = WIDTH - 1;
-    /** The maximum Y value. */
-    public final static int MAX_Y = HEIGHT - 1;
-    
-    /** The maximum values as a Point. */
-    private final static Point MAX = new Point (MAX_X, MAX_Y);
     
     /** The device itself. */
     private final IS31FL3731 phat;

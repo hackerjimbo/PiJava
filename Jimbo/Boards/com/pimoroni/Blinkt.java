@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Jim Darby.
+ * Copyright (C) 2016, 2018 Jim Darby.
  *
  * This software is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,6 +27,8 @@ import Jimbo.Graphics.Point;
 import Jimbo.Graphics.Colour;
 import Jimbo.Graphics.ColourMatrix;
 import Jimbo.Graphics.ColourMatrixDemo;
+import Jimbo.Graphics.MatrixHelper;
+
 import java.io.IOException;
 
 /**
@@ -34,10 +36,12 @@ import java.io.IOException;
  *
  * @author Jim Darby
  */
-public class Blinkt implements ColourMatrix
+public class Blinkt extends MatrixHelper <Colour> implements ColourMatrix
 {
     public Blinkt ()
     {
+        super (8, 1);
+        
         a = new APA102 (GpioFactory.getInstance(), RaspiPin.GPIO_04, RaspiPin.GPIO_05, 8);
     }
     
@@ -81,18 +85,6 @@ public class Blinkt implements ColourMatrix
     }
     
     /**
-     * Return a point with the maximum values for X and Y in this
-     * matrix.
-     * 
-     * @return The maximum size.
-     */
-    @Override
-    public Point getMax ()
-    {
-        return MAX;
-    }
-    
-    /**
      * Run a simple test demo on the board.
      * 
      * @param args The command line arguments. They're ignored.
@@ -106,18 +98,6 @@ public class Blinkt implements ColourMatrix
         
         ColourMatrixDemo.run (b);
     }
-    
-    /** The width of the board. */
-    public static final int WIDTH = 8;
-    /** The height of the board. */
-    public static final int HEIGHT = 1;
-    /** The maximum X value. */
-    public static final int MAX_X = WIDTH - 1;
-    /** The maximum Y value. */
-    public static final int MAX_Y = HEIGHT - 1;
-    
-    /** The maximum values as a Point. */
-    private final static Point MAX = new Point (MAX_X, MAX_Y);
     
     /** Internal pointer to the hat. */
     private final APA102 a;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Jim Darby.
+ * Copyright (C) 2016-2018 Jim Darby.
  *
  * This software is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,24 +19,22 @@
 package Jimbo.Devices;
 
 import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
-import com.pi4j.io.gpio.RaspiPin;
 
 import Jimbo.Graphics.Colour;
-import Jimbo.Graphics.ColourMatrix;
-import Jimbo.Graphics.ColourMatrixDemo;
 import Jimbo.Graphics.Point;
+import Jimbo.Graphics.ColourMatrix;
+import Jimbo.Graphics.MatrixHelper;
 
-import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * This class drives a chain of APA102 "intelligent" LEDs.
  *
  * @author Jim Darby
  */
-public class APA102 implements ColourMatrix
+public class APA102 extends MatrixHelper <Colour> implements ColourMatrix
 {
     /**
      * Construct an APA102 controller.
@@ -48,16 +46,15 @@ public class APA102 implements ColourMatrix
      */
     public APA102 (GpioController gpio, Pin data_pin, Pin clock_pin, int n)
     {
-        WIDTH = n;
-        MAX_X = WIDTH - 1;
-        MAX = new Point (MAX_X, MAX_Y);
+        super (n, 1);
+        
         dat = gpio.provisionDigitalOutputPin (data_pin);
         clk = gpio.provisionDigitalOutputPin (clock_pin);
         data = new int[n];
         
-        // Set all off to start with.
-        for (int i = 0; i < WIDTH; ++i)
-            data[i] = 0;
+        // Set all off to start with. Java actually defines that the array is
+        // initialised with zeros but this is here just to emphasise that.
+        Arrays.fill (data, 0);
         
         // And push that out to the devices.
         show ();
@@ -65,7 +62,7 @@ public class APA102 implements ColourMatrix
     
     /**
      * Set a LED to a specific red, green and blue value. We also set the
-     * brightness.
+     * brightness. This is the fastest and most complete way.
      * 
      * @param n The LED number, in the range 0 to the number of LEDs minus one.
      * @param r The red value (0 to 255).
@@ -73,30 +70,32 @@ public class APA102 implements ColourMatrix
      * @param b The blue value (0 to 255).
      * @param bright The brightness (0 to 31).
      */
-    public void set (int n, int r, int g, int b, int bright)
+    public void set (int n, int r, int g, int b, byte bright)
     {
-        if (n < 0 || n >= WIDTH ||
+        if (n < 0 || n >= data.length ||
             r < 0 || r > 255 ||
             g < 0 || g > 255 ||
             b < 0 || b > 255 ||
-            bright < 0 || bright > 31)
+            bright < 0 || bright > MAX_BRIGHT)
             throw new IllegalArgumentException ("Invalid parameter");
         
         data[n] = (bright << 24) | (r << 16) | (g << 8) | b;
     }
     
     /**
-     * Return a point with the maximum values for X and Y in this
-     * matrix.
+     * Set a LED to a specific red, green and blue value. The brightness comes
+     * from the default we've set earlier.
      * 
-     * @return A Point object with the maximum values for X and Y.
+     * @param n The LED number, in the range 0 to the number of LEDs minus one.
+     * @param r The red value (0 to 255).
+     * @param g The green value (0 to 255).
+     * @param b The blue value (0 to 255).
      */
-    @Override
-    public Point getMax()
+    public void set (int n, int r, int g, int b)
     {
-        return MAX;
+        set (n, r, g, b, brightness);
     }
-
+    
     /**
      * Set a pixel the generic way.
      * 
@@ -109,7 +108,7 @@ public class APA102 implements ColourMatrix
         if (p.getY () != 0)
             throw new IllegalArgumentException ("Invalid Y coordinate");
         
-        set (p.getX (), value.getRed (), value.getGreen (), value.getBlue (), brightness);
+        set (p.getX (), value.getRed (), value.getGreen (), value.getBlue ());
     }
 
     /**
@@ -123,7 +122,7 @@ public class APA102 implements ColourMatrix
             write_byte ((byte) 0);
         
         // Send data
-        for (int i = 0; i < WIDTH; ++i)
+        for (int i = 0; i < data.length; ++i)
             write_led (data[i]);
         
         // And latch it
@@ -135,13 +134,26 @@ public class APA102 implements ColourMatrix
      * 
      * @param brightness The brightness scale factor: 0 to 31.
      */
-    
-    public final void brightness (int brightness)
+    public void brightness (byte brightness)
     {
-        if (brightness < 0 || brightness > 31)
+        if (brightness < 0 || brightness > MAX_BRIGHT)
             throw new IllegalArgumentException ("Invalid brightness");
         
         this.brightness = brightness;
+    }
+    
+    /**
+     * Scale the brightness to avoid blindness. This version uses a double in
+     * the range 0 to 1 (inclusive).
+     * 
+     * @param b The brightness scale factor: 0.0 to 1.0.
+     */
+    public void brightness (double b)
+    {
+        if (b < 0 || b > 1)
+            throw new IllegalArgumentException ("Invalid brightness");
+        
+        brightness ((byte) (b * MAX_BRIGHT + 0.5));
     }
     
     /**
@@ -192,40 +204,15 @@ public class APA102 implements ColourMatrix
         }
     }
     
-    public static void main (String args[]) throws InterruptedException, IOException
-    {
-        APA102 blinkt = new APA102 (GpioFactory.getInstance(), RaspiPin.GPIO_04, RaspiPin.GPIO_05, 8);
-        
-        for (int x = 0; x < 8; ++x)
-        {
-            blinkt.set (x, 255, 0, 0, 31);
-            blinkt.show ();
-            Thread.sleep (500);
-            blinkt.set (x, 0, 0, 0, 31);
-            blinkt.show ();
-        }
-        
-        ColourMatrixDemo.run (blinkt);
-    }
-    
     /** The pin we use for data. */
     private final GpioPinDigitalOutput dat;
     /** The pin we use for the clock. */
     private final GpioPinDigitalOutput clk;
     /** The data for each LED in the chain. */
     private final int[] data;
-    /** Scale factor for brightness. Defaults to 8 (of 31) because Pimoroni. */
-    private int brightness = 8;
+    /** Scale factor for brightness. Defaults to quarter power because Pimoroni. */
+    private byte brightness = MAX_BRIGHT / 4;
     
-    /** The width of the board. */
-    public final int WIDTH;
-    /** The height of the board. */
-    public static final int HEIGHT = 1;
-    /** The maximum X value. */
-    public final int MAX_X;
-    /** The maximum Y value. */
-    public static final int MAX_Y = HEIGHT - 1;
-    
-    /** The maximum values as a Point. */
-    private final Point MAX;
+    /** The maximum brightness possible. */
+    public static final byte MAX_BRIGHT = 31;
 }

@@ -26,6 +26,24 @@ package Jimbo.Graphics;
 public interface ColourMatrix extends Matrix <Colour>
 {
     /**
+     * Sets a pixel to a specific colour. This should be the fastest method
+     * available.
+     * 
+     * @param x The X coordinate of the pixel.
+     * @param y The Y coordinate of the pixel.
+     * @param r The red value: 0 to 255.
+     * @param g The green value: 0 to 255.
+     * @param b The blue value: 0 to 255.
+     */
+    abstract public void setPixel (int x, int y, int r, int g, int b);
+
+    @Override
+    default public void setPixel (Point p, Colour c)
+    {
+        setPixel (p.getX (), p.getY (), c.getRed (), c.getGreen (), c.getBlue ());
+    }
+    
+    /**
      * Sets a pixel to a specific colour.
      * 
      * @param p The address of the Pixel.
@@ -35,21 +53,7 @@ public interface ColourMatrix extends Matrix <Colour>
      */
     default public void setPixel (Point p, int r, int g, int b)
     {
-        setPixel (p, new Colour (r, g, b));
-    }
-    
-     /**
-     * Sets a pixel to a specific colour.
-     * 
-     * @param x The X coordinate of the pixel.
-     * @param y The Y coordinate of the pixel.
-     * @param r The red value: 0 to 255.
-     * @param g The green value: 0 to 255.
-     * @param b The blue value: 0 to 255.
-     */
-    default public void setPixel (int x, int y, int r, int g, int b)
-    {
-        setPixel (new Point (x, y), new Colour (r, g, b));
+        setPixel (p.getX (), p.getY (), r, g, b);
     }
 
     /**
@@ -61,7 +65,7 @@ public interface ColourMatrix extends Matrix <Colour>
      */
     default public void setPixel (int x, int y, Colour c)
     {
-        setPixel (new Point (x, y), c);
+        setPixel (x, y, c.getRed (), c.getGreen (), c.getBlue ());
     }
     
     /**

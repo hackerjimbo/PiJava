@@ -26,16 +26,14 @@ package Jimbo.Graphics;
 public interface MonoMatrix extends Matrix <Integer>
 {
     /**
-     * Sets a pixel to a specific value.
+     * Sets a pixel to a specific value. This should be the fastest
+     * implementation.
      * 
      * @param x The X coordinate of the pixel.
      * @param y The Y coordinate of the pixel.
      * @param value The value to set in the range 0 to 255.
      */
-    default public void setPixel (int x, int y, int value)
-    {
-        setPixel (new Point (x, y), new Integer (value));
-    }
+    abstract public void setPixel (int x, int y, int value);
     
     /**
      * Sets a pixel to a specific value.
@@ -45,10 +43,7 @@ public interface MonoMatrix extends Matrix <Integer>
      */
     default public void setPixel (Point p, double value)
     {
-        if (value < 0 || value > 1)
-            throw new IllegalArgumentException ("Invalid pixel value " + value);
-        
-        setPixel (p, new Integer ((int) (value * 255 + 0.5)));
+        setPixel (p.getX (), p.getY (), value);
     }
     
     /**
@@ -63,7 +58,7 @@ public interface MonoMatrix extends Matrix <Integer>
         if (value < 0 || value > 1)
             throw new IllegalArgumentException ("Invalid pixel value " + value);
         
-        setPixel (new Point (x, y), new Integer ((int) (value * 255 + 0.5)));
+        setPixel (x, y, (int) (value * 255 + 0.5));
     }
     
     /**
@@ -78,5 +73,5 @@ public interface MonoMatrix extends Matrix <Integer>
     }
     
     /** The value used to clear a pixel. */
-    static final Integer BLACK = 0;
+    static final int BLACK = 0;
 }

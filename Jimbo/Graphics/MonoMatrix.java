@@ -36,6 +36,23 @@ public interface MonoMatrix extends Matrix <Integer>
     abstract public void setPixel (int x, int y, int value);
     
     /**
+     * Sets a pixel to a specific value. This unboxes the Integer value.
+     * 
+     * @param x The X coordinate of the pixel.
+     * @param y The Y coordinate of the pixel.
+     * @param value The value to set in the range 0 to 255.
+     */
+    default public void setPixel (int x, int y, Integer value)
+    {
+        setPixel (x, y, value.intValue());
+    }
+    
+    default public void setPixel (Point p, Integer value)
+    {
+        setPixel (p.getX (), p.getY (), value);
+    }
+    
+    /**
      * Sets a pixel to a specific value.
      * 
      * @param p The pixel to set.

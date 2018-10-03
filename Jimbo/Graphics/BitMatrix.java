@@ -32,9 +32,18 @@ public interface BitMatrix extends Matrix <Boolean>
      * @param y The Y coordinate of the pixel.
      * @param on If the pixel is on.
      */
-    default public void setPixel (int x, int y, boolean on)
+    abstract public void setPixel (int x, int y, boolean on);
+    
+     /**
+     * Sets a pixel to a specific colour.
+     * 
+     * @param p The point the set/clear.
+     * @param on If the pixel is on.
+     */
+    @Override
+    default public void setPixel (Point p, Boolean on)
     {
-        setPixel (new Point (x, y), on);
+	setPixel (p.getX (), p.getY (), on);
     }
     
     /**

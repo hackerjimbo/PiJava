@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Jim Darby.
+ * Copyright (C) 2017, 2018 Jim Darby.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,14 +19,18 @@
 package Jimbo.Graphics;
 
 /**
- * This interface describes a matrix of bit values.
+ * This interface describes a matrix of bit values. All implementations must
+ * provide an implementation of the abstract method. This interface also
+ * provides default methods for mapping the generic methods into the abstract
+ * fast one.
  * 
  * @author Jim Darby
  */
 public interface BitMatrix extends Matrix <Boolean>
 {
-     /**
-     * Sets a pixel to a specific colour.
+    /**
+     * Sets a pixel to a specific colour. This me be implemented to provide the
+     * fastest implementation.
      * 
      * @param x The X coordinate of the pixel.
      * @param y The Y coordinate of the pixel.
@@ -34,8 +38,9 @@ public interface BitMatrix extends Matrix <Boolean>
      */
     abstract public void setPixel (int x, int y, boolean on);
     
-     /**
-     * Sets a pixel to a specific colour.
+    /**
+     * Sets a pixel to a specific value. This maps the canonical interface to
+     * the optimised specific one.
      * 
      * @param p The point the set/clear.
      * @param on If the pixel is on.

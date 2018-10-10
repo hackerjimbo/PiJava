@@ -23,7 +23,6 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
 
 import Jimbo.Graphics.Colour;
-import Jimbo.Graphics.Point;
 import Jimbo.Graphics.ColourMatrix;
 import Jimbo.Graphics.MatrixHelper;
 
@@ -70,7 +69,7 @@ public class APA102 extends MatrixHelper <Colour> implements ColourMatrix
      * @param b The blue value (0 to 255).
      * @param bright The brightness (0 to 31).
      */
-    public void set (int n, int r, int g, int b, byte bright)
+    public void setPixel (int n, int r, int g, int b, byte bright)
     {
         if (n < 0 || n >= data.length ||
             r < 0 || r > 255 ||
@@ -91,26 +90,30 @@ public class APA102 extends MatrixHelper <Colour> implements ColourMatrix
      * @param g The green value (0 to 255).
      * @param b The blue value (0 to 255).
      */
-    public void set (int n, int r, int g, int b)
+    public void setPixel (int n, int r, int g, int b)
     {
-        set (n, r, g, b, brightness);
+        setPixel (n, r, g, b, brightness);
     }
     
     /**
-     * Set a pixel the generic way.
+     * Set a LED to a specific red, green and blue value. The brightness comes
+     * from the default we've set earlier.
      * 
-     * @param p The pixel to set.
-     * @param value The colour to set it to.
+     * @param x The x coordinate. 
+     * @param y The y coordinate. Must be zero.
+     * @param r The red value (0 to 255).
+     * @param g The green value (0 to 255).
+     * @param b The blue value (0 to 255).
      */
     @Override
-    public void setPixel(Point p, Colour value)
+    public void setPixel (int x, int y, int r, int g, int b)
     {
-        if (p.getY () != 0)
-            throw new IllegalArgumentException ("Invalid Y coordinate");
+        if (y != 0)
+            throw new IllegalArgumentException ();
         
-        set (p.getX (), value.getRed (), value.getGreen (), value.getBlue ());
+        setPixel (x, r, g, b);
     }
-
+    
     /**
      * Update the LED chain.
      */

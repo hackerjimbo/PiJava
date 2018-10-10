@@ -37,6 +37,13 @@ public interface ColourMatrix extends Matrix <Colour>
      */
     abstract public void setPixel (int x, int y, int r, int g, int b);
 
+    /**
+     * Sets a pixel to a specific colour. The expands the Point and Colour and
+     * then uses the abstract method..
+     * 
+     * @param p The pixel.
+     * @param c The colour.
+     */
     @Override
     default public void setPixel (Point p, Colour c)
     {
@@ -44,7 +51,8 @@ public interface ColourMatrix extends Matrix <Colour>
     }
     
     /**
-     * Sets a pixel to a specific colour.
+     * Sets a pixel to a specific colour. This expands the Point and then uses
+     * the abstract method.
      * 
      * @param p The address of the Pixel.
      * @param r The red value: 0 to 255.
@@ -57,7 +65,8 @@ public interface ColourMatrix extends Matrix <Colour>
     }
 
     /**
-     * Sets a pixel to a specific colour.
+     * Sets a pixel to a specific colour. This expands the Colour and then uses
+     * the abstract method.
      * 
      * @param x The X coordinate of the pixel.
      * @param y The Y coordinate of the pixel.

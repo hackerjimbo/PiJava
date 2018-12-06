@@ -40,8 +40,8 @@ public class MonoMatrixDemo
         final Point limits = m.getMax ();
         final int max_x = limits.getX ();
         final int max_y = limits.getY ();
-        final Double on = new Double (1);
-        final Double off = new Double (0);
+        final Double on = 1.0;
+        final Double off = 0.0;
         final Clock <Integer> clock = Clock.isClockable(m) ? new Clock <> (m) : null;
 
         for (int y = 0; y <= max_y; ++y)

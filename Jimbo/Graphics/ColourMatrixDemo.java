@@ -63,28 +63,28 @@ public class ColourMatrixDemo implements Runnable
         
         // Basic scan
         
-        int phase = 0;
-        
         for (int y = 0; y <= max_y; ++y)
             for (int x = 0; x <= max_x; ++x)
             {
                 final Point p = new Point (x, y);
-                m.setPixel (p,
-                        (phase == 0) ? 0x80 : 0x00,
-                        (phase == 1) ? 0x80 : 0x00,
-                        (phase == 2) ? 0x80 : 0x00);
-                m.show ();
-                Thread.sleep (250);
-                m.setPixel (p, 0x00, 0x00, 0x00);
-                m.show ();
-                Thread.sleep (50);
                 
-                phase = (phase + 1) % 3;
+                for (int phase = 0; phase < 3; ++phase)
+                {
+                    m.setPixel (p,
+                            (phase == 0) ? 0x80 : 0x00,
+                            (phase == 1) ? 0x80 : 0x00,
+                            (phase == 2) ? 0x80 : 0x00);
+                    m.show ();
+                    Thread.sleep (100);
+                    m.setPixel (p, 0x00, 0x00, 0x00);
+                    m.show ();
+                    Thread.sleep (25);
+                }
             }
         
         // "I made it rainbow!" TM
         
-        phase = 0;
+        int phase = 0;
         
         final double max_distance = Math.sqrt (max_x * max_x + max_y * max_y);
         

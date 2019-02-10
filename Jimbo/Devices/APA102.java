@@ -137,12 +137,12 @@ public class APA102 extends MatrixHelper <Colour> implements ColourMatrix
      * 
      * @param brightness The brightness scale factor: 0 to 31.
      */
-    public void brightness (byte brightness)
+    public void brightness (int brightness)
     {
         if (brightness < 0 || brightness > MAX_BRIGHT)
             throw new IllegalArgumentException ("Invalid brightness");
         
-        this.brightness = brightness;
+        this.brightness = (byte) brightness;
     }
     
     /**

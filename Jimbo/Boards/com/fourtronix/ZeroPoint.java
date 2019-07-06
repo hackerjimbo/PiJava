@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Jim Darby.
+ * Copyright (C) 2016, 2019 Jim Darby.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -136,9 +136,9 @@ public class ZeroPoint extends ComponentBase implements Servo
      */
     @Override
     public void off ()
-    {
-        for (int i = 0; i < pins.length; ++i)
-            pins[i].setState (false);
+    {        
+        for (GpioPinDigitalOutput pin : pins)
+            pin.setState (false);
     }
     
     /**

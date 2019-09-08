@@ -89,7 +89,7 @@ public class Logging
             final LocalDateTime stamp = LocalDateTime.ofInstant (instant, zone);
             final String when = stamp.format (DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             
-            System.out.println ("[" + when + "] " + text);
+            System.out.println ("[" + when + "] " + r.getLoggerName () + ": " + text);
             
             /*System.out.println ("Logging record:");
             System.out.println ("       Time: " + when);

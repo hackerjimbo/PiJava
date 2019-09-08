@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Jim Darby.
+ * Copyright (C) 2016, 2019 Jim Darby.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -114,7 +114,7 @@ public class Pi2C
                 plus = true;
                 break;
 
-            // End up here for uknown Pies
+            // End up here for unknown Pies
             case RaspberryPi_Unknown:
                 throw new IOException ("Unknown Raspberry Pi model");
                 

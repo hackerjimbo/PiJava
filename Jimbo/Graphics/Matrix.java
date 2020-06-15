@@ -30,6 +30,20 @@ import java.io.IOException;
 public interface Matrix <T>
 {
     /**
+     * Return the width of this matrix.
+     * 
+     * @return The width in pixels.
+     */
+    public int getWidth ();
+    
+    /**
+     * Return the height of this matrix.
+     * 
+     * @return The height in Pixels.
+     */
+    public int getHeight ();
+    
+    /**
      * Return a point with the maximum values for X and Y in this
      * matrix.
      * 

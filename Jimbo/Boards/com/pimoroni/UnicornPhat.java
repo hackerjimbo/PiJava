@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Jim Darby.
+ * Copyright (C) 2017, 2018 Jim Darby.
  *
  * This software is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,10 +22,11 @@ import Jimbo.Devices.WS2811.WS2811;
 import Jimbo.Devices.WS2811.WS2811Raw;
 
 import Jimbo.Graphics.FlipY;
-import Jimbo.Graphics.Point;
 import Jimbo.Graphics.Colour;
 import Jimbo.Graphics.ColourMatrix;
 import Jimbo.Graphics.ColourMatrixDemo;
+import Jimbo.Graphics.MatrixHelper;
+
 import java.io.IOException;
 
 /**
@@ -33,7 +34,7 @@ import java.io.IOException;
  * 
  * @author Jim Darby
  */
-public class UnicornPhat implements ColourMatrix
+public class UnicornPhat extends MatrixHelper <Colour> implements ColourMatrix
 {
     /**
      * Construct a new UnicornPhat object. We can have only one though this
@@ -41,7 +42,7 @@ public class UnicornPhat implements ColourMatrix
      */
     public UnicornPhat ()
     {
-        h = new WS2811 (WIDTH, HEIGHT, new FlipY (WIDTH, HEIGHT), WS2811Raw.WS2811_STRIP_GRB, 0.25);
+        this (0.25);
     }
     
     /**
@@ -52,17 +53,35 @@ public class UnicornPhat implements ColourMatrix
      */
     public UnicornPhat (double brightness)
     {
+        super (8, 4);
+        
         h = new WS2811 (WIDTH, HEIGHT, new FlipY (WIDTH, HEIGHT), WS2811Raw.WS2811_STRIP_GRB, brightness);
     }
     
     /**
+     * Set a LED to a specific red, green and blue value. The brightness comes
+     * from the default we've set earlier.
+     * 
+     * @param x The x coordinate. 
+     * @param y The y coordinate. Must be zero.
+     * @param r The red value (0 to 255).
+     * @param g The green value (0 to 255).
+     * @param b The blue value (0 to 255).
+     */
+    @Override
+    public void setPixel (int x, int y, int r, int g, int b)
+    {
+        h.setPixel (x, y, r, g, b);
+    }
+        
+    /*
      * Sets a pixel to a specific colour.
      * 
      * @param p The address of the Pixel.
      * @param r The red value: 0 to 255.
      * @param g The green value: 0 to 255.
      * @param b The blue value: 0 to 255.
-     */
+     *
     @Override
     public void setPixel (Point p, int r, int g, int b)
     {
@@ -74,7 +93,7 @@ public class UnicornPhat implements ColourMatrix
      * 
      * @param p The point to set.
      * @param c The colour to set it to.
-     */
+     *
     @Override
     public void setPixel (Point p, Colour c)
     {
@@ -89,19 +108,7 @@ public class UnicornPhat implements ColourMatrix
     {
         h.show ();
     }
-    
-    /**
-     * Return a point with the maximum values for X and Y in this
-     * matrix.
-     * 
-     * @return The maximum size.
-     */
-    @Override
-    public Point getMax ()
-    {
-        return MAX;
-    }
-    
+
     /**
      * Run a simple test demo on the board.
      * 
@@ -116,18 +123,6 @@ public class UnicornPhat implements ColourMatrix
         
         ColourMatrixDemo.run (u);
     }
-    
-    /** The width of the board. */
-    public static final int WIDTH = 8;
-    /** The height of the board. */
-    public static final int HEIGHT = 4;
-    /** The maximum X value. */
-    public static final int MAX_X = WIDTH - 1;
-    /** The maximum Y value. */
-    public static final int MAX_Y = HEIGHT - 1;
-    
-    /** The maximum values as a Point. */
-    private final static Point MAX = new Point (MAX_X, MAX_Y);
     
     /** Internal pointer to the hat. */
     private final WS2811 h;

@@ -34,9 +34,9 @@ import Jimbo.Devices.APA102;
 import Jimbo.Graphics.Colour;
 import Jimbo.Graphics.ColourMatrix;
 import Jimbo.Graphics.ColourMatrixDemo;
+import Jimbo.Graphics.MatrixHelper;
 import Jimbo.Graphics.FlipX;
 import Jimbo.Graphics.Mapping;
-import Jimbo.Graphics.Point;
 
 import java.io.IOException;
 import java.time.LocalTime;
@@ -405,7 +405,7 @@ public class RainbowHAT
         display.update ();
     }
     
-    public static class LEDs implements ColourMatrix
+    public static class LEDs extends MatrixHelper <Colour> implements ColourMatrix
     {
         /**
          * Construct the LEDs. We need a GPIO controller and the other
@@ -415,37 +415,30 @@ public class RainbowHAT
          */
         private LEDs (GpioController gpio)
         {
+            super (7, 1);
+            
             cs = gpio.provisionDigitalOutputPin (RaspiPin.GPIO_10, "LED Chip Select");
             cs.low ();
-            apa102 = new APA102 (gpio, RaspiPin.GPIO_12, RaspiPin.GPIO_14, 7);
+            apa102 = new APA102 (gpio, RaspiPin.GPIO_12, RaspiPin.GPIO_14, WIDTH);
             cs.high ();
             
             map = new FlipX (WIDTH, HEIGHT);
         }
 
         /**
-         * Return the maximum X and Y coordinates.
+         * Set a LED to a specific red, green and blue value. The brightness comes
+         * from the default we've set earlier.
          * 
-         * @return The values. 
+         * @param x The x coordinate. 
+         * @param y The y coordinate. Must be zero.
+         * @param r The red value (0 to 255).
+         * @param g The green value (0 to 255).
+         * @param b The blue value (0 to 255).
          */
         @Override
-        public Point getMax ()
+        public void setPixel (int x, int y, int r, int g, int b)
         {
-            return MAX;
-        }
-
-        /**
-         * Set a specific pixel to a specific value. The height is 1 and the
-         * width is 7 meaning the X coordinate goes from 0 to 6 and the Y has
-         * to be 0.
-         * 
-         * @param p The point to change.
-         * @param value The value to change it to.
-         */
-        @Override
-        public void setPixel (Point p, Colour value)
-        {
-            apa102.setPixel (map.map (p), value);
+            apa102.setPixel (x, y, r, g, b);
         }
 
         /**
@@ -470,17 +463,6 @@ public class RainbowHAT
         {
             apa102.brightness(brightness);
         }
-        
-        /** The width of the board. */
-        public final int WIDTH = 7;
-        /** The height of the board. */
-        public static final int HEIGHT = 1;
-        /** The maximum X value. */
-        public final int MAX_X = WIDTH - 1;
-        /** The maximum Y value. */
-        public static final int MAX_Y = HEIGHT - 1;
-        /** The maximum values as a Point. */
-        private final Point MAX = new Point (MAX_X, MAX_Y);
         
         /** Point to the underlying APA102 driver. */
         private final APA102 apa102;

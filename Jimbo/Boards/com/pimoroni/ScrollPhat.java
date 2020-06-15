@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Jim Darby.
+ * Copyright (C) 2016-2018 Jim Darby.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,7 @@ import com.pi4j.io.i2c.I2CFactory;
 
 import Jimbo.Graphics.Point;
 import Jimbo.Graphics.BitMatrix;
+import Jimbo.Graphics.MatrixHelper;
 import Jimbo.Graphics.BitMatrixDemo;
 
 import Jimbo.Devices.IS31FL3730;
@@ -34,7 +35,7 @@ import Jimbo.Devices.IS31FL3730;
  * 
  * @author Jim Darby
  */
-public class ScrollPhat implements BitMatrix
+public class ScrollPhat extends MatrixHelper <Boolean> implements BitMatrix
 {    
     /**
      * Create a ScroolPhat object.
@@ -45,6 +46,8 @@ public class ScrollPhat implements BitMatrix
      */
     public ScrollPhat () throws IOException, I2CFactory.UnsupportedBusNumberException
     {
+        super (11, 5);
+        
         phat =  new IS31FL3730 (I2CFactory.getInstance (I2CBus.BUS_1));
         
         // Set five by 11.
@@ -113,7 +116,7 @@ public class ScrollPhat implements BitMatrix
     @Override
     public void setPixel(Point p, Boolean value) 
     {
-        setPixel (p, value.booleanValue ());
+        setPixel (p.getX (), p.getY(), value);
     }
     
     /**
@@ -135,43 +138,12 @@ public class ScrollPhat implements BitMatrix
      * 
      * @param n The number of tries, must be non-negative.
      * 
-     * @throws IOException On a bad paramters.
+     * @throws IOException On a bad parameter.
      */
     public void setTriesWarning (int n) throws IOException
     {
         phat.setTriesWarning (n);
     }
-    
-    /**
-     * Return a point with the maximum values for X and Y in this
-     * matrix.
-     * 
-     * @return The maximum size.
-     */
-    @Override
-    public Point getMax ()
-    {
-        return MAX;
-    }
-    
-    /** The device width. */
-    public static final int WIDTH = 11;
-    /** The device height. */
-    public static final int HEIGHT = 5;
-    
-    /**
-     * The maximum x value. X coordinates must be in the range 0 to this
-     * INCLUSIVE.
-     */
-    private static final int MAX_X = WIDTH - 1;
-    /**
-     * The maximum y value. Y coordinates must be in the range 0 to this
-     * INCLUSIVE.
-     */
-    private static final int MAX_Y = HEIGHT - 1;
-    
-    /** The maximum values as a Point. */
-    private final static Point MAX = new Point (MAX_X, MAX_Y);
     
     /** Internal pointer to the low-level device. */
     private final IS31FL3730 phat;

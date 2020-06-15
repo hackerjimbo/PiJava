@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Jim Darby.
+ * Copyright (C) 2017, 2018 Jim Darby.
  *
  * This software is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,7 @@ import Jimbo.Graphics.Point;
 import Jimbo.Graphics.Colour;
 import Jimbo.Graphics.ColourMatrix;
 import Jimbo.Graphics.ColourMatrixDemo;
+import Jimbo.Graphics.MatrixHelper;
 
 import com.pi4j.io.spi.SpiChannel;
 import com.pi4j.io.spi.SpiDevice;
@@ -35,7 +36,7 @@ import com.pi4j.io.spi.SpiFactory;
  * 
  * @author Jim Darby
  */
-public class UnicornHATHD implements ColourMatrix 
+public class UnicornHATHD extends MatrixHelper <Colour> implements ColourMatrix 
 {
     /**
      * Construct a UnicornHATHD object.
@@ -44,6 +45,8 @@ public class UnicornHATHD implements ColourMatrix
      */
     public UnicornHATHD () throws IOException
     {
+        super (16, 16);
+        
         dev = SpiFactory.getInstance (SpiChannel.CS0, 9000000, SpiDevice.DEFAULT_SPI_MODE);
         Arrays.fill (data, (byte) 0);
         data[0] = 0x72;
@@ -100,18 +103,6 @@ public class UnicornHATHD implements ColourMatrix
     }
     
     /**
-     * Return a point with the maximum values for X and Y in this
-     * matrix.
-     * 
-     * @return The maximum size.
-     */
-    @Override
-    public Point getMax ()
-    {
-        return MAX;
-    }
-    
-    /**
      * Run a simple test demo on the board.
      * 
      * @param args The command line arguments. They're ignored.
@@ -125,18 +116,6 @@ public class UnicornHATHD implements ColourMatrix
         
         ColourMatrixDemo.run (u);
     }
-    
-    /** The width of the board. */
-    public static final int WIDTH = 16;
-    /** The height of the board. */
-    public static final int HEIGHT = 16;
-    /** The maximum X value. */
-    public static final int MAX_X = WIDTH - 1;
-    /** The maximum Y value. */
-    public static final int MAX_Y = HEIGHT - 1;
-    
-    /** The maximum values as a Point. */
-    private final static Point MAX = new Point (MAX_X, MAX_Y);
     
     /** Data for the hat. */
     private final byte data[] = new byte [WIDTH * HEIGHT * 3 + 1];

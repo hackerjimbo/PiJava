@@ -43,6 +43,28 @@ public abstract class MatrixHelper <T> implements Matrix <T>
     }
     
     /**
+     * Return the width of this matrix.
+     * 
+     * @return The width in pixels.
+     */
+    @Override
+    public int getWidth ()
+    {
+        return WIDTH;
+    }
+    
+    /**
+     * Return the height of this matrix.
+     * 
+     * @return The height in Pixels.
+     */
+    @Override
+    public int getHeight ()
+    {
+        return HEIGHT;
+    }
+    
+    /**
      * Return a point with the maximum values for X and Y in this
      * matrix.
      * 
